@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h2>Check-Ins</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Timestamp</th>
+        <th>Pain</th>
+        <th>Fatigue</th>
+        <th>Rigidity</th>
+        <th>Bradykinesia</th>
+        <th>Tremor</th>
+        <th>Hand Dysfunction</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for checkin in object_list %}
+        <tr>
+          <td>{{ checkin.timestamp }}</td>
+          <td>{{ checkin.get_pain_display }}</td>
+          <td>{{ checkin.get_fatigue_display }}</td>
+          <td>{{ checkin.get_rigidity_display }}</td>
+          <td>{{ checkin.get_bradykinesia_display }}</td>
+          <td>{{ checkin.get_tremor_display }}</td>
+          <td>{{ checkin.get_hand_dysfunction_display }}</td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="7">No check-ins found.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

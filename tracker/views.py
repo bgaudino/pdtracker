@@ -1,9 +1,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.utils import timezone
-from django.views.generic import CreateView
+from django.views.generic import CreateView, ListView
 
 from .forms import ActivityLogForm, CheckInForm, MedicationLogForm
+from .models import ActivityLog, CheckIn, MedicationLog
 
 
 class BaseLogCreateView(LoginRequiredMixin, CreateView):
@@ -42,3 +43,28 @@ class MedicationLogCreateView(BaseLogCreateView):
 
 class ActivityLogCreateView(BaseLogCreateView):
     form_class = ActivityLogForm
+
+
+class BaseLogListView(LoginRequiredMixin, ListView):
+    paginate_by = 100
+
+    def get_queryset(self):
+        return self.model.objects.filter(user=self.request.user).order_by("-timestamp")
+
+
+class CheckInListView(BaseLogListView):
+    model = CheckIn
+
+
+class MedicationLogListView(BaseLogListView):
+    model = MedicationLog
+
+    def get_queryset(self):
+        return super().get_queryset().select_related("medication")
+
+
+class ActivityLogListView(BaseLogListView):
+    model = ActivityLog
+
+    def get_queryset(self):
+        return super().get_queryset().select_related("activity")

@@ -10,12 +10,21 @@
     <a class="dashboard-button"
        href="{% url 'activitylog-create' %}"
        role="button">Log Activity 🏃‍♂️</a>
+    <a class="dashboard-button secondary"
+       href="{% url 'checkin-list' %}"
+       role="button">Check-Ins 📊</a>
+    <a class="dashboard-button secondary"
+       href="{% url 'medicationlog-list' %}"
+       role="button">Medication Logs 💊</a>
+    <a class="dashboard-button secondary"
+       href="{% url 'activitylog-list' %}"
+       role="button">Activity Logs 🏃‍♂️</a>
     {% if request.user.is_superuser %}
-      <a class="dashboard-button" href="{% url 'admin:index' %}" role="button">Admin 🛠️</a>
+      <a class="dashboard-button contrast" href="{% url 'admin:index' %}" role="button">Admin 🛠️</a>
     {% endif %}
     <form method="post" action="{% url 'logout' %}">
       {% csrf_token %}
-      <button class="dashboard-button" type="submit">Logout 🚪</button>
+      <button class="dashboard-button contrast" type="submit">Logout 🚪</button>
     </form>
   </section>
 {% endblock %}
