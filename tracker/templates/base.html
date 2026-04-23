@@ -12,7 +12,9 @@
   <body>
     <main class="container">
       <header>
-        <h1>PD Tracker</h1>
+        <a href="{% url 'home' %}" class="logo">
+          <h1>PD Tracker</h1>
+        </a>
       </header>
       {% block content %}{% endblock %}
     </main>

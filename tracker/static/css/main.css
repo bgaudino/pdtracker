@@ -2,3 +2,15 @@ a[role=button] {
   height: min-content;
   width: 100%;
 }
+
+.dashboard-button {
+  aspect-ratio: 1/1 !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  font-size: x-large;
+}
+
+.logo {
+  text-decoration: none;
+}
