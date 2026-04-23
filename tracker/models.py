@@ -1,0 +1,77 @@
+from django.conf import settings
+from django.db import models
+
+from .fields import SeverityField
+
+
+class Medication(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    name = models.CharField()
+    dose = models.CharField()
+    notes = models.TextField(blank=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.dose})"
+
+    class Meta:
+        unique_together = ("user", "name", "dose")
+
+
+class Activity(models.Model):
+    class Focus(models.TextChoices):
+        AEROBIC = "aerobic", "Aerobic"
+        STRENGTH = "strength", "Strength"
+        MOBILITY = "mobility", "Mobility"
+        BALANCE = "balance", "Balance"
+        HYBRID = "hybrid", "Hybrid"
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    name = models.CharField()
+    focus = models.CharField(choices=Focus.choices)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        unique_together = ("user", "name")
+        verbose_name_plural = "activities"
+
+
+class AbstractLog(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField()
+
+    class Meta:
+        abstract = True
+
+
+class MedicationLog(AbstractLog):
+    medication = models.ForeignKey(Medication, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.medication} ({self.timestamp})"
+
+
+class CheckIn(AbstractLog):
+    notes = models.TextField(blank=True)
+    pain = SeverityField()
+    rigidity = SeverityField()
+    bradykinesia = SeverityField()
+    tremor = SeverityField()
+    hand_dysfunction = SeverityField()
+    fatigue = SeverityField()
+
+    def __str__(self):
+        return f"Check-in ({self.timestamp})"
+
+
+class ActivityLog(AbstractLog):
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
+    duration_minutes = models.IntegerField(default=0)
+    dystonia_present = models.BooleanField(default=False)
+    dystonia_severity = SeverityField(null=True, blank=True)
+    dystonia_onset = models.PositiveSmallIntegerField(null=True, blank=True)
+    notes = models.TextField(blank=True)
+
+    def __str__(self):
+        return f"{self.activity.name} ({self.timestamp})"

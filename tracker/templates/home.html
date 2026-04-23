@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+  <section class="grid">
+    <a href="{% url 'checkin-create' %}" role="button">Check In</a>
+    <a href="{% url 'medicationlog-create' %}" role="button">Log Medication</a>
+    <a href="{% url 'activitylog-create' %}" role="button">Log Activity</a>
+    {% if request.user.is_superuser %}
+      <a href="{% url 'admin:index' %}" role="button">Admin</a>
+    {% endif %}
+    <form method="post" action="{% url 'logout' %}">
+      {% csrf_token %}
+      <button type="submit">Logout</button>
+    </form>
+  </section>
+{% endblock %}

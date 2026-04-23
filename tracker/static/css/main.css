@@ -1,0 +1,4 @@
+a[role=button] {
+  height: min-content;
+  width: 100%;
+}
