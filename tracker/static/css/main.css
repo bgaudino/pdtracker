@@ -18,3 +18,17 @@ a[role=button] {
 .grid {
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
 }
+
+#tapping-test {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+
+#tap-button {
+  aspect-ratio: 1/1 !important;
+  font-size: xxx-large;
+  border-radius: 50%;
+}

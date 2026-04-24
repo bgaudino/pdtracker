@@ -3,8 +3,8 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import CreateView, ListView, TemplateView
 
-from .forms import ActivityLogForm, CheckInForm, MedicationLogForm
-from .models import ActivityLog, CheckIn, MedicationLog
+from .forms import ActivityLogForm, CheckInForm, MedicationLogForm, TappingTestForm
+from .models import ActivityLog, CheckIn, MedicationLog, TappingTest
 
 
 class HomeView(LoginRequiredMixin, TemplateView):
@@ -49,6 +49,11 @@ class ActivityLogCreateView(BaseLogCreateView):
     form_class = ActivityLogForm
 
 
+class TappingTestCreateView(BaseLogCreateView):
+    form_class = TappingTestForm
+    template_name = "tracker/tappingtest.html"
+
+
 class BaseLogListView(LoginRequiredMixin, ListView):
     paginate_by = 100
 
@@ -74,19 +79,26 @@ class ActivityLogListView(BaseLogListView):
         return super().get_queryset().select_related("activity")
 
 
+class TappingTestListView(BaseLogListView):
+    model = TappingTest
+
+
 class ReportsView(LoginRequiredMixin, TemplateView):
     template_name = "tracker/reports.html"
 
     def get_context_data(self, **kwargs):
         end = timezone.now()
         start = end - timezone.timedelta(days=14)
-        report = CheckIn.objects.filter(
-            user=self.request.user,
-            timestamp__gte=start,
-            timestamp__lt=end,
-        ).report()
+        reports = {}
+        for model in [CheckIn, TappingTest]:
+            report = model.objects.filter(
+                user=self.request.user,
+                timestamp__gte=start,
+                timestamp__lt=end,
+            ).report()
+            reports[model._meta.model_name.lower()] = report
 
         context = super().get_context_data(**kwargs)
-        context["report"] = report
+        context["reports"] = reports
 
         return context

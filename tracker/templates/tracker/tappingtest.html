@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load static %}
+{% block extra_head %}
+  <script src="{% static 'js/tapping-test.js' %}"></script>
+{% endblock %}
+{% block content %}
+  <section id="tapping-test">
+    <h1>Tapping Test</h1>
+    <button id="tap-button" class="contrast">Tap</button>
+    <div id="test-results">
+      <p>
+        <span id="test-time">0.00</span> seconds
+      </p>
+      <p>
+        Taps: <span id="test-taps">0</span>
+      </p>
+    </div>
+  </section>
+  <form id="tapping-test-form"
+        method="post"
+        action="{% url 'tappingtest-create' %}"
+        hidden>
+    {% csrf_token %}
+    {{ form }}
+  </form>
+  <button type="submit"
+          form="tapping-test-form"
+          class="contrast"
+          hidden
+          disabled>Save Results</button>
+{% endblock %}

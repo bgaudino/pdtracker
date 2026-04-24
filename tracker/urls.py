@@ -24,4 +24,8 @@ urlpatterns = [
     path("checkins/", views.CheckInListView.as_view(), name="checkin-list"),
     path("activitylogs/", views.ActivityLogListView.as_view(), name="activitylog-list"),
     path("reports/", views.ReportsView.as_view(), name="reports"),
+    path(
+        "tappingtest/", views.TappingTestCreateView.as_view(), name="tappingtest-create"
+    ),
+    path("tappingtests/", views.TappingTestListView.as_view(), name="tappingtest-list"),
 ]

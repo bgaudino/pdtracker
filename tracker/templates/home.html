@@ -10,6 +10,9 @@
     <a class="dashboard-button"
        href="{% url 'activitylog-create' %}"
        role="button">Log Activity 🏃‍♂️</a>
+    <a class="dashboard-button"
+       href="{% url 'tappingtest-create' %}"
+       role="button">Tapping Test 🖐️</a>
     <a class="dashboard-button outline"
        href="{% url 'reports' %}"
        role="button">View Reports 📈</a>
@@ -22,6 +25,9 @@
     <a class="dashboard-button secondary"
        href="{% url 'activitylog-list' %}"
        role="button">Activity Logs 🏃‍♂️</a>
+    <a class="dashboard-button secondary"
+       href="{% url 'tappingtest-list' %}"
+       role="button">Tapping Tests 🖐️</a>
     {% if request.user.is_superuser %}
       <a class="dashboard-button contrast"
          href="{% url 'admin:index' %}"

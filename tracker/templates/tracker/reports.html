@@ -14,10 +14,11 @@
           <th>Bradykinesia</th>
           <th>Hand Dysfunction</th>
           <th>Fatigue</th>
+          <th>Check-ins Logged</th>
         </tr>
       </thead>
       <tbody>
-        {% for hours, data in report.items %}
+        {% for hours, data in reports.checkin.items %}
           <tr>
             <td>{{ hours }} - {{ hours|add:"1" }}</td>
             <td>{{ data.pain }}</td>
@@ -25,9 +26,34 @@
             <td>{{ data.bradykinesia }}</td>
             <td>{{ data.hand_dysfunction }}</td>
             <td>{{ data.fatigue }}</td>
+            <td>{{ data.count }}</td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
   </article>
-{% endblock %}
+  <article>
+    <header>
+      <h2>Tapping Test Report</h2>
+    </header>
+    <table>
+      <thead>
+        <tr>
+          <th>Hours Since Last Dose</th>
+          <th>Taps</th>
+          <th>Taps Per Second</th>
+          <th>Tests Logged</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for hours, data in reports.tappingtest.items %}
+          <tr>
+            <td>{{ hours }} - {{ hours|add:"1" }}</td>
+            <td>{{ data.taps|floatformat:2 }}</td>
+            <td>{{ data.taps_per_second|floatformat:2 }}</td>
+            <td>{{ data.count }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endblock %}

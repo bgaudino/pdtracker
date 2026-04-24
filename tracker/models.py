@@ -133,3 +133,40 @@ class ActivityLog(AbstractLog):
 
     def __str__(self):
         return f"{self.activity.name} ({self.timestamp})"
+
+
+class TappingTestQuerySet(LogQuerySet):
+    def report(self):
+        def average(lst):
+            return sum(lst) / len(lst) if lst else 0
+
+        groups = self.group_by_hours_since_dose()
+        report_data = {}
+        for hours, logs in groups.items():
+            data = {
+                attr: average([getattr(log, attr) for log in logs])
+                for attr in [
+                    "taps",
+                    "duration",
+                    "taps_per_second",
+                ]
+            }
+            data["count"] = len(logs)
+            report_data[hours] = data
+        return report_data
+
+
+class TappingTest(AbstractLog):
+    taps = models.PositiveIntegerField()
+    duration = models.PositiveIntegerField()
+
+    objects = TappingTestQuerySet.as_manager()
+
+    def __str__(self):
+        return f"Tapping Test {self.taps} taps at {self.timestamp})"
+
+    @property
+    def taps_per_second(self):
+        if self.duration > 0:
+            return self.taps / self.duration
+        return 0

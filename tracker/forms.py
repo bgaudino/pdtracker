@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import ActivityLog, CheckIn, MedicationLog
+from .models import ActivityLog, CheckIn, MedicationLog, TappingTest
 
 
 class BaseLogForm(forms.ModelForm):
@@ -54,3 +54,9 @@ class MedicationLogForm(BaseLogForm):
     def __init__(self, *args, user, **kwargs):
         super().__init__(*args, user=user, **kwargs)
         self.fields["medication"].queryset = user.medication_set.all()
+
+
+class TappingTestForm(BaseLogForm):
+    class Meta:
+        model = TappingTest
+        fields = ["taps", "duration", "timestamp"]

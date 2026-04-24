@@ -26,3 +26,8 @@ class MedicationAdmin(admin.ModelAdmin):
 @admin.register(models.MedicationLog)
 class MedicationLogAdmin(admin.ModelAdmin):
     pass
+
+
+@admin.register(models.TappingTest)
+class TappingTestAdmin(admin.ModelAdmin):
+    pass
