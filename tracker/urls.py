@@ -23,4 +23,5 @@ urlpatterns = [
     ),
     path("checkins/", views.CheckInListView.as_view(), name="checkin-list"),
     path("activitylogs/", views.ActivityLogListView.as_view(), name="activitylog-list"),
+    path("reports/", views.ReportsView.as_view(), name="reports"),
 ]

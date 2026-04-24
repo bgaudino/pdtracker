@@ -72,3 +72,21 @@ class ActivityLogListView(BaseLogListView):
 
     def get_queryset(self):
         return super().get_queryset().select_related("activity")
+
+
+class ReportsView(LoginRequiredMixin, TemplateView):
+    template_name = "tracker/reports.html"
+
+    def get_context_data(self, **kwargs):
+        end = timezone.now()
+        start = end - timezone.timedelta(days=14)
+        report = CheckIn.objects.filter(
+            user=self.request.user,
+            timestamp__gte=start,
+            timestamp__lt=end,
+        ).report()
+
+        context = super().get_context_data(**kwargs)
+        context["report"] = report
+
+        return context

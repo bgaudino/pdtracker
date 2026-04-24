@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Reports</h1>
+  <article>
+    <header>
+      <h2>Check-in Report</h2>
+    </header>
+    <table>
+      <thead>
+        <tr>
+          <th>Hours Since Last Dose</th>
+          <th>Pain</th>
+          <th>Rigidity</th>
+          <th>Bradykinesia</th>
+          <th>Hand Dysfunction</th>
+          <th>Fatigue</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for hours, data in report.items %}
+          <tr>
+            <td>{{ hours }} - {{ hours|add:"1" }}</td>
+            <td>{{ data.pain }}</td>
+            <td>{{ data.rigidity }}</td>
+            <td>{{ data.bradykinesia }}</td>
+            <td>{{ data.hand_dysfunction }}</td>
+            <td>{{ data.fatigue }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </article>
+{% endblock %}

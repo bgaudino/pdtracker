@@ -37,9 +37,41 @@ class Activity(models.Model):
         verbose_name_plural = "activities"
 
 
+class LogQuerySet(models.QuerySet):
+    def with_last_dose(self):
+        last_dose_subquery = (
+            MedicationLog.objects.filter(
+                user=models.OuterRef("user"),
+                timestamp__lte=models.OuterRef("timestamp"),
+            )
+            .order_by("-timestamp")
+            .values("timestamp")[:1]
+        )
+        return self.annotate(last_dose_at=models.Subquery(last_dose_subquery))
+
+    def with_time_since_dose(self):
+        return self.with_last_dose().annotate(
+            time_since_dose=models.ExpressionWrapper(
+                models.F("timestamp") - models.F("last_dose_at"),
+                output_field=models.DurationField(),
+            )
+        )
+
+    def group_by_hours_since_dose(self):
+        queryset = self.with_time_since_dose().exclude(time_since_dose__isnull=True)
+        groups = {}
+        for obj in queryset:
+            delta_hours = int(obj.time_since_dose.total_seconds() // 3600)
+            delta_hours = min(delta_hours, 3)
+            groups.setdefault(delta_hours, []).append(obj)
+        return groups
+
+
 class AbstractLog(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     timestamp = models.DateTimeField()
+
+    objects = LogQuerySet.as_manager()
 
     class Meta:
         abstract = True
@@ -52,6 +84,30 @@ class MedicationLog(AbstractLog):
         return f"{self.medication} ({self.timestamp})"
 
 
+class CheckInQuerySet(LogQuerySet):
+    def report(self):
+        def average(lst):
+            return sum(lst) / len(lst) if lst else 0
+
+        groups = self.group_by_hours_since_dose()
+        report_data = {}
+        for hours, logs in groups.items():
+            data = {
+                attr: average([getattr(log, attr) for log in logs])
+                for attr in [
+                    "pain",
+                    "rigidity",
+                    "bradykinesia",
+                    "tremor",
+                    "hand_dysfunction",
+                    "fatigue",
+                ]
+            }
+            data["count"] = len(logs)
+            report_data[hours] = data
+        return report_data
+
+
 class CheckIn(AbstractLog):
     notes = models.TextField(blank=True)
     pain = SeverityField()
@@ -60,6 +116,8 @@ class CheckIn(AbstractLog):
     tremor = SeverityField()
     hand_dysfunction = SeverityField()
     fatigue = SeverityField()
+
+    objects = CheckInQuerySet.as_manager()
 
     def __str__(self):
         return f"Check-in ({self.timestamp})"
