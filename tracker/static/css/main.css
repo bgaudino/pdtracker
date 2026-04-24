@@ -31,4 +31,5 @@ a[role=button] {
   aspect-ratio: 1/1 !important;
   font-size: xxx-large;
   border-radius: 50%;
+  touch-action: manipulation;
 }
