@@ -8,7 +8,7 @@ from .models import ActivityLog, CheckIn, MedicationLog
 
 
 class HomeView(LoginRequiredMixin, TemplateView):
-    template_name = "tracker/home.html"
+    template_name = "home.html"
 
 
 class BaseLogCreateView(LoginRequiredMixin, CreateView):
