@@ -1,10 +1,14 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.utils import timezone
-from django.views.generic import CreateView, ListView
+from django.views.generic import CreateView, ListView, TemplateView
 
 from .forms import ActivityLogForm, CheckInForm, MedicationLogForm
 from .models import ActivityLog, CheckIn, MedicationLog
+
+
+class HomeView(LoginRequiredMixin, TemplateView):
+    template_name = "tracker/home.html"
 
 
 class BaseLogCreateView(LoginRequiredMixin, CreateView):
