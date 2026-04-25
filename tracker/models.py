@@ -62,7 +62,7 @@ class LogQuerySet(models.QuerySet):
         groups = {}
         for obj in queryset:
             delta_hours = int(obj.time_since_dose.total_seconds() // 3600)
-            delta_hours = min(delta_hours, 3)
+            delta_hours = min(delta_hours, 5)
             groups.setdefault(delta_hours, []).append(obj)
         return groups
 
