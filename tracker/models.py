@@ -66,6 +66,21 @@ class LogQuerySet(models.QuerySet):
             groups.setdefault(delta_hours, []).append(obj)
         return groups
 
+    def report(self, fields):
+        def average(lst):
+            return sum(lst) / len(lst) if lst else 0
+
+        groups = self.group_by_hours_since_dose()
+        report_data = {}
+        for hours, logs in sorted(groups.items()):
+            data = {
+                field: average([getattr(log, field) for log in logs])
+                for field in fields
+            }
+            data["count"] = len(logs)
+            report_data[hours] = data
+        return report_data
+
 
 class AbstractLog(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -84,30 +99,6 @@ class MedicationLog(AbstractLog):
         return f"{self.medication} ({self.timestamp})"
 
 
-class CheckInQuerySet(LogQuerySet):
-    def report(self):
-        def average(lst):
-            return sum(lst) / len(lst) if lst else 0
-
-        groups = self.group_by_hours_since_dose()
-        report_data = {}
-        for hours, logs in groups.items():
-            data = {
-                attr: average([getattr(log, attr) for log in logs])
-                for attr in [
-                    "pain",
-                    "rigidity",
-                    "bradykinesia",
-                    "tremor",
-                    "hand_dysfunction",
-                    "fatigue",
-                ]
-            }
-            data["count"] = len(logs)
-            report_data[hours] = data
-        return report_data
-
-
 class CheckIn(AbstractLog):
     notes = models.TextField(blank=True)
     pain = SeverityField()
@@ -116,8 +107,6 @@ class CheckIn(AbstractLog):
     tremor = SeverityField()
     hand_dysfunction = SeverityField()
     fatigue = SeverityField()
-
-    objects = CheckInQuerySet.as_manager()
 
     def __str__(self):
         return f"Check-in ({self.timestamp})"
@@ -135,32 +124,9 @@ class ActivityLog(AbstractLog):
         return f"{self.activity.name} ({self.timestamp})"
 
 
-class TappingTestQuerySet(LogQuerySet):
-    def report(self):
-        def average(lst):
-            return sum(lst) / len(lst) if lst else 0
-
-        groups = self.group_by_hours_since_dose()
-        report_data = {}
-        for hours, logs in groups.items():
-            data = {
-                attr: average([getattr(log, attr) for log in logs])
-                for attr in [
-                    "taps",
-                    "duration",
-                    "taps_per_second",
-                ]
-            }
-            data["count"] = len(logs)
-            report_data[hours] = data
-        return report_data
-
-
 class TappingTest(AbstractLog):
     taps = models.PositiveIntegerField()
     duration = models.PositiveIntegerField()
-
-    objects = TappingTestQuerySet.as_manager()
 
     def __str__(self):
         return f"Tapping Test {self.taps} taps at {self.timestamp})"

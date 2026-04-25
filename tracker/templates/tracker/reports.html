@@ -21,11 +21,11 @@
         {% for hours, data in reports.checkin.items %}
           <tr>
             <td>{{ hours }} - {{ hours|add:"1" }}</td>
-            <td>{{ data.pain }}</td>
-            <td>{{ data.rigidity }}</td>
-            <td>{{ data.bradykinesia }}</td>
-            <td>{{ data.hand_dysfunction }}</td>
-            <td>{{ data.fatigue }}</td>
+            <td>{{ data.pain|floatformat:2 }}</td>
+            <td>{{ data.rigidity|floatformat:2 }}</td>
+            <td>{{ data.bradykinesia|floatformat:2 }}</td>
+            <td>{{ data.hand_dysfunction|floatformat:2 }}</td>
+            <td>{{ data.fatigue|floatformat:2 }}</td>
             <td>{{ data.count }}</td>
           </tr>
         {% endfor %}
@@ -40,7 +40,6 @@
       <thead>
         <tr>
           <th>Hours Since Last Dose</th>
-          <th>Taps</th>
           <th>Taps Per Second</th>
           <th>Tests Logged</th>
         </tr>
@@ -49,11 +48,11 @@
         {% for hours, data in reports.tappingtest.items %}
           <tr>
             <td>{{ hours }} - {{ hours|add:"1" }}</td>
-            <td>{{ data.taps|floatformat:2 }}</td>
             <td>{{ data.taps_per_second|floatformat:2 }}</td>
             <td>{{ data.count }}</td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
-  {% endblock %}
+  </article>
+{% endblock %}

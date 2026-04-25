@@ -90,13 +90,23 @@ class ReportsView(LoginRequiredMixin, TemplateView):
         end = timezone.now()
         start = end - timezone.timedelta(days=14)
         reports = {}
-        for model in [CheckIn, TappingTest]:
-            report = model.objects.filter(
-                user=self.request.user,
-                timestamp__gte=start,
-                timestamp__lt=end,
-            ).report()
-            reports[model._meta.model_name.lower()] = report
+        check_ins = CheckIn.objects.filter(
+            user=self.request.user, timestamp__gte=start, timestamp__lt=end
+        )
+        reports["checkin"] = check_ins.report(
+            fields=[
+                "pain",
+                "rigidity",
+                "bradykinesia",
+                "hand_dysfunction",
+                "fatigue",
+            ]
+        )
+
+        tapping_tests = TappingTest.objects.filter(
+            user=self.request.user, timestamp__gte=start, timestamp__lt=end
+        )
+        reports["tappingtest"] = tapping_tests.report(fields=["taps_per_second"])
 
         context = super().get_context_data(**kwargs)
         context["reports"] = reports
