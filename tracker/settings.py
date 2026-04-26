@@ -132,6 +132,11 @@ LOGOUT_REDIRECT_URL = "login"
 
 SECURE_CSP = {
     "default-src": [CSP.SELF],
+    "connect-src": [CSP.SELF, "https://cdn.jsdelivr.net/npm/chart.umd.min.js.map"],
+    "script-src": [
+        CSP.SELF,
+        "https://cdn.jsdelivr.net/npm/chart.js",
+    ],
     "style-src": [
         CSP.SELF,
         "https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css",

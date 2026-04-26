@@ -1,4 +1,10 @@
 {% extends "base.html" %}
+{% load static %}
+{% block extra_head %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  {{ reports|json_script:"reports-data" }}
+  <script src="{% static 'js/reports.js' %}"></script>
+{% endblock %}
 {% block content %}
   <h1>Reports</h1>
   <article>
@@ -33,6 +39,9 @@
     </table>
   </article>
   <article>
+    <canvas id="checkin-chart"></canvas>
+  </article>
+  <article>
     <header>
       <h2>Tapping Test Report</h2>
     </header>
@@ -54,5 +63,8 @@
         {% endfor %}
       </tbody>
     </table>
+  </article>
+  <article>
+    <canvas id="tapping-chart"></canvas>
   </article>
 {% endblock %}
