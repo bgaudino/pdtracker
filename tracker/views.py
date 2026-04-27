@@ -144,6 +144,16 @@ class ReportsView(LoginRequiredMixin, TemplateView):
         )
         reports["typingtest"] = typing_tests.report(fields=["wpm", "accuracy"])
 
+        activities = ActivityLog.objects.filter(
+            user=self.request.user,
+            timestamp__gte=start,
+            timestamp__lt=end,
+            activity__name="Running",
+        )
+        reports["activitylog"] = activities.report(
+            fields=["dystonia_onset", "dystonia_severity"]
+        )
+
         context = super().get_context_data(**kwargs)
         context["reports"] = reports
 

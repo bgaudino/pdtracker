@@ -95,4 +95,32 @@
   <article>
     <canvas id="typing-chart"></canvas>
   </article>
+  <article>
+    <header>
+      <h2>Exercise Dystonia Report</h2>
+    </header>
+    <table>
+      <thead>
+        <tr>
+          <th>Hours Since Last Dose</th>
+          <th>Dystonia Onset</th>
+          <th>Dystonia Severity</th>
+          <th>Activities Logged</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for hours, data in reports.activitylog.items %}
+          <tr>
+            <td>{{ hours }} - {{ hours|add:"1" }}</td>
+            <td>{{ data.dystonia_onset|floatformat:2 }}</td>
+            <td>{{ data.dystonia_severity|floatformat:2 }}</td>
+            <td>{{ data.count }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </article>
+  <article>
+    <canvas id="activity-chart"></canvas>
+  </article>
 {% endblock %}

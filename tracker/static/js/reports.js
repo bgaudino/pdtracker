@@ -130,4 +130,47 @@ document.addEventListener('DOMContentLoaded', function () {
       },
     },
   });
+
+  const activityChart = document.getElementById('activity-chart');
+
+  new Chart(activityChart, {
+    type: 'line',
+    data: {
+      labels: Object.keys(data.activitylog),
+      datasets: [
+        {
+          label: 'Dystonia Onset',
+          data: Object.values(data.activitylog).map(
+            (item) => item.dystonia_onset,
+          ),
+          borderWidth: 1,
+        },
+        {
+          label: 'Dystonia Severity',
+          data: Object.values(data.activitylog).map(
+            (item) => item.dystonia_severity,
+          ),
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      scales: {
+        x: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Hours Since Last Medication',
+          },
+        },
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Severity',
+          },
+        },
+      },
+    },
+  });
 });
