@@ -23,9 +23,10 @@ class User(AbstractEmailUser):
         if not last_dose:
             return
 
-        window_start = last_dose.timestamp + timezone.timedelta(hours=5)
-        window_end = last_dose.timestamp + timezone.timedelta(hours=6)
-        now = timezone.now()
+        taken_at = timezone.localtime(last_dose.timestamp)
+        window_start = taken_at + timezone.timedelta(hours=5)
+        window_end = taken_at + timezone.timedelta(hours=6)
+        now = timezone.localtime(timezone.now())
         fmt = "%I:%M %p"
         if now >= window_end:
             return "You can take your next dose now."
