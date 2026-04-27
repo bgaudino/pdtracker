@@ -3,16 +3,19 @@ a[role=button] {
   width: 100%;
 }
 
+main > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
 .dashboard-button {
   aspect-ratio: 1/1 !important;
   display: flex !important;
   align-items: center;
   justify-content: center;
   font-size: x-large;
-}
-
-.logo {
-  text-decoration: none;
 }
 
 .grid {

@@ -13,9 +13,10 @@
   <body>
     <main class="container">
       <header>
-        <a href="{% url 'home' %}" class="logo">
-          <h1>PD Tracker</h1>
-        </a>
+        <h1>PD Tracker</h1>
+        {% if request.path != '/' %}
+          <a href="{% url 'home' %}">Home</a>
+        {% endif %}
       </header>
       {% block content %}{% endblock %}
     </main>
