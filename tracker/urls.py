@@ -28,4 +28,6 @@ urlpatterns = [
         "tappingtest/", views.TappingTestCreateView.as_view(), name="tappingtest-create"
     ),
     path("tappingtests/", views.TappingTestListView.as_view(), name="tappingtest-list"),
+    path("typingtest/", views.TypingTestCreateView.as_view(), name="typingtest-create"),
+    path("typingtests/", views.TypingTestListView.as_view(), name="typingtest-list"),
 ]

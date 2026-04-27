@@ -33,3 +33,26 @@ a[role=button] {
   border-radius: 50%;
   touch-action: manipulation;
 }
+
+.prompt-char {
+  font-size: xx-large;
+  font-weight: bold;
+}
+
+.prompt-char.correct {
+  color: green;
+}
+
+.prompt-char.incorrect {
+  color: red;
+}
+
+.prompt-char.current {
+  border-bottom: 2px solid var(--pico-primary-border);
+}
+
+#test-results {
+  font-size: xx-large;
+  font-weight: bold;
+  text-align: center;
+}

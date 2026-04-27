@@ -67,4 +67,32 @@
   <article>
     <canvas id="tapping-chart"></canvas>
   </article>
+  <article>
+    <header>
+      <h2>Typing Test Report</h2>
+    </header>
+    <table>
+      <thead>
+        <tr>
+          <th>Hours Since Last Dose</th>
+          <th>WPM</th>
+          <th>Accuracy</th>
+          <th>Tests Logged</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for hours, data in reports.typingtest.items %}
+          <tr>
+            <td>{{ hours }} - {{ hours|add:"1" }}</td>
+            <td>{{ data.wpm|floatformat:2 }}</td>
+            <td>{{ data.accuracy|floatformat:2 }}</td>
+            <td>{{ data.count }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </article>
+  <article>
+    <canvas id="typing-chart"></canvas>
+  </article>
 {% endblock %}

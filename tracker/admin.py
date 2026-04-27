@@ -31,3 +31,18 @@ class MedicationLogAdmin(admin.ModelAdmin):
 @admin.register(models.TappingTest)
 class TappingTestAdmin(admin.ModelAdmin):
     pass
+
+
+@admin.register(models.TypingTest)
+class TypingTestAdmin(admin.ModelAdmin):
+    readonly_fields = (
+        "user",
+        "timestamp",
+        "prompt",
+        "typed",
+        "time_seconds",
+        "correct_chars",
+        "errors",
+        "accuracy",
+        "wpm",
+    )

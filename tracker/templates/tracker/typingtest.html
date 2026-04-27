@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load static %}
+{% block extra_head %}
+  <script src="{% static 'js/typing-test.js' %}"></script>
+  {{ prompt|json_script:"prompt-data" }}
+{% endblock %}
+{% block content %}
+  <section id="typing-test">
+    <h1>Typing Test</h1>
+    <article>
+      <p id="prompt-display"></p>
+    </article>
+    <article>
+      <textarea id="typing-input" autofocus></textarea>
+    </article>
+    <article>
+      <div id="test-results">
+        <p>
+          <span id="timer">30</span> seconds
+        </p>
+        <p>
+          Accuracy: <span id="accuracy">0%</span>
+        </p>
+        <p>
+          Words Per Minute: <span id="wpm">0</span>
+        </p>
+      </div>
+    </article>
+  </section>
+  <form id="typing-test-form"
+        method="post"
+        action="{% url 'typingtest-create' %}"
+        hidden>
+    {% csrf_token %}
+    {{ form }}
+  </form>
+  <button type="submit"
+          id="save-results-button"
+          form="typing-test-form"
+          class="contrast"
+          hidden>Save Results</button>
+{% endblock %}

@@ -3,8 +3,15 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import CreateView, ListView, TemplateView
 
-from .forms import ActivityLogForm, CheckInForm, MedicationLogForm, TappingTestForm
-from .models import ActivityLog, CheckIn, MedicationLog, TappingTest
+from .constants import TYPING_PROMPT
+from .forms import (
+    ActivityLogForm,
+    CheckInForm,
+    MedicationLogForm,
+    TappingTestForm,
+    TypingTestForm,
+)
+from .models import ActivityLog, CheckIn, MedicationLog, TappingTest, TypingTest
 
 
 class HomeView(LoginRequiredMixin, TemplateView):
@@ -54,6 +61,21 @@ class TappingTestCreateView(BaseLogCreateView):
     template_name = "tracker/tappingtest.html"
 
 
+class TypingTestCreateView(BaseLogCreateView):
+    form_class = TypingTestForm
+    template_name = "tracker/typingtest.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["prompt"] = TYPING_PROMPT
+        return context
+
+    def get_initial(self):
+        initial = super().get_initial()
+        initial["prompt"] = " ".join(TYPING_PROMPT)
+        return initial
+
+
 class BaseLogListView(LoginRequiredMixin, ListView):
     paginate_by = 100
 
@@ -83,6 +105,10 @@ class TappingTestListView(BaseLogListView):
     model = TappingTest
 
 
+class TypingTestListView(BaseLogListView):
+    model = TypingTest
+
+
 class ReportsView(LoginRequiredMixin, TemplateView):
     template_name = "tracker/reports.html"
 
@@ -107,6 +133,11 @@ class ReportsView(LoginRequiredMixin, TemplateView):
             user=self.request.user, timestamp__gte=start, timestamp__lt=end
         )
         reports["tappingtest"] = tapping_tests.report(fields=["taps_per_second"])
+
+        typing_tests = TypingTest.objects.filter(
+            user=self.request.user, timestamp__gte=start, timestamp__lt=end
+        )
+        reports["typingtest"] = typing_tests.report(fields=["wpm", "accuracy"])
 
         context = super().get_context_data(**kwargs)
         context["reports"] = reports

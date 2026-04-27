@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import ActivityLog, CheckIn, MedicationLog, TappingTest
+from .models import ActivityLog, CheckIn, MedicationLog, TappingTest, TypingTest
 
 
 class BaseLogForm(forms.ModelForm):
@@ -60,3 +60,9 @@ class TappingTestForm(BaseLogForm):
     class Meta:
         model = TappingTest
         fields = ["taps", "duration", "timestamp"]
+
+
+class TypingTestForm(BaseLogForm):
+    class Meta:
+        model = TypingTest
+        fields = ["prompt", "typed", "time_seconds", "timestamp"]

@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.db.models.functions import Length
 
 from .fields import SeverityField
 
@@ -136,3 +137,45 @@ class TappingTest(AbstractLog):
         if self.duration > 0:
             return self.taps / self.duration
         return 0
+
+
+correct_expr = models.Func(
+    models.F("prompt"),
+    models.F("typed"),
+    function="count_correct_chars",
+)
+
+typed_len = Length("typed")
+
+
+class TypingTest(AbstractLog):
+    prompt = models.TextField()
+    typed = models.TextField()
+    time_seconds = models.DecimalField(max_digits=6, decimal_places=2)
+    correct_chars = models.GeneratedField(
+        expression=correct_expr,
+        output_field=models.IntegerField(),
+        db_persist=True,
+    )
+    errors = models.GeneratedField(
+        expression=typed_len - correct_expr,
+        output_field=models.IntegerField(),
+        db_persist=True,
+    )
+    accuracy = models.GeneratedField(
+        expression=models.Case(
+            models.When(typed="", then=0),
+            default=(correct_expr * 100.0) / typed_len,
+            output_field=models.DecimalField(max_digits=5, decimal_places=2),
+        ),
+        output_field=models.DecimalField(max_digits=5, decimal_places=2),
+        db_persist=True,
+    )
+    wpm = models.GeneratedField(
+        expression=(correct_expr / 5.0) / (models.F("time_seconds") / 60.0),
+        output_field=models.DecimalField(max_digits=5, decimal_places=2),
+        db_persist=True,
+    )
+
+    def __str__(self):
+        return f"Typing Test {self.wpm} WPM at {self.timestamp})"

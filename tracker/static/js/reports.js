@@ -91,4 +91,43 @@ document.addEventListener('DOMContentLoaded', function () {
       },
     },
   });
+
+  const typingChart = document.getElementById('typing-chart');
+
+  new Chart(typingChart, {
+    type: 'line',
+    data: {
+      labels: Object.keys(data.typingtest),
+      datasets: [
+        {
+          label: 'WPM',
+          data: Object.values(data.typingtest).map((item) => item.wpm),
+          borderWidth: 1,
+        },
+        {
+          label: 'Accuracy',
+          data: Object.values(data.typingtest).map((item) => item.accuracy),
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      scales: {
+        x: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Hours Since Last Medication',
+          },
+        },
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Performance',
+          },
+        },
+      },
+    },
+  });
 });

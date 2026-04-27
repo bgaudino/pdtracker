@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h2>Tapping Tests</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Timestamp</th>
+        <th>WPM</th>
+        <th>Accuracy</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for typing_test in object_list %}
+        <tr>
+          <td>{{ typing_test.timestamp }}</td>
+          <td>{{ typing_test.wpm }}</td>
+          <td>{{ typing_test.accuracy }}</td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="3">No typing tests found.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
