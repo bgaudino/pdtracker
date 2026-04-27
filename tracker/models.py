@@ -115,14 +115,37 @@ class CheckIn(AbstractLog):
 
 class ActivityLog(AbstractLog):
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
-    duration_minutes = models.IntegerField(default=0)
-    dystonia_present = models.BooleanField(default=False)
-    dystonia_severity = SeverityField(null=True, blank=True)
-    dystonia_onset = models.PositiveSmallIntegerField(null=True, blank=True)
+    duration_minutes = models.PositiveIntegerField(default=0)
+    dystonia_severity = SeverityField()
+    dystonia_onset = models.PositiveSmallIntegerField(default=0)
     notes = models.TextField(blank=True)
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(duration_minutes__gte=0),
+                name="duration_non_negative",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(dystonia_severity__gte=0),
+                name="dystonia_severity_non_negative",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(dystonia_onset__gte=0),
+                name="dystonia_onset_non_negative",
+            ),
+            models.CheckConstraint(
+                condition=~models.Q(dystonia_onset__gt=0, dystonia_severity=0),
+                name="dystonia_onset_without_severity",
+            ),
+        ]
 
     def __str__(self):
         return f"{self.activity.name} ({self.timestamp})"
+
+    @property
+    def dystonia_present(self):
+        return bool(self.dystonia_severity)
 
 
 class TappingTest(AbstractLog):

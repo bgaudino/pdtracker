@@ -36,7 +36,6 @@ class ActivityLogForm(BaseLogForm):
             "duration_minutes",
             "notes",
             "timestamp",
-            "dystonia_present",
             "dystonia_severity",
             "dystonia_onset",
         ]
