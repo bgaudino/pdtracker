@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
+  {% if dose_message %}<div class="alert">{{ dose_message }}</div>{% endif %}
   <section class="grid">
     <a class="dashboard-button"
        href="{% url 'checkin-create' %}"

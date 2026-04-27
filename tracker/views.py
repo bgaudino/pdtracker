@@ -17,6 +17,11 @@ from .models import ActivityLog, CheckIn, MedicationLog, TappingTest, TypingTest
 class HomeView(LoginRequiredMixin, TemplateView):
     template_name = "home.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["dose_message"] = self.request.user.get_next_dose_message()
+        return context
+
 
 class BaseLogCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy("home")
