@@ -137,9 +137,11 @@ SECURE_CSP = {
     "script-src": [
         CSP.SELF,
         "https://cdn.jsdelivr.net/npm/chart.js",
+        "https://cdn.jsdelivr.net/npm/flatpickr",
     ],
     "style-src": [
         CSP.SELF,
         "https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css",
+        "https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css",
     ],
 }

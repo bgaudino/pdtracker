@@ -4,9 +4,11 @@ from .models import ActivityLog, CheckIn, MedicationLog, TappingTest, TypingTest
 
 
 class BaseLogForm(forms.ModelForm):
-    timestamp = forms.DateTimeField(
-        widget=forms.DateTimeInput(attrs={"type": "datetime-local"})
-    )
+    class Media:
+        css = {
+            "all": ("https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css",)
+        }
+        js = ("https://cdn.jsdelivr.net/npm/flatpickr", "js/datetime-picker.js")
 
     def __init__(self, *args, user, **kwargs):
         super().__init__(*args, **kwargs)
