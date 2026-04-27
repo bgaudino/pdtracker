@@ -133,6 +133,7 @@ LOGOUT_REDIRECT_URL = "login"
 SECURE_CSP = {
     "default-src": [CSP.SELF],
     "connect-src": [CSP.SELF, "https://cdn.jsdelivr.net/npm/chart.umd.min.js.map"],
+    "img-src": [CSP.SELF, "data:"],  # datepicker icon
     "script-src": [
         CSP.SELF,
         "https://cdn.jsdelivr.net/npm/chart.js",
