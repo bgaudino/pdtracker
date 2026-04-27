@@ -13,4 +13,5 @@ class Severity(models.IntegerChoices):
 class SeverityField(models.IntegerField):
     def __init__(self, *args, **kwargs):
         kwargs.setdefault("choices", Severity.choices)
+        kwargs.setdefault("default", Severity.NONE)
         super().__init__(*args, **kwargs)
