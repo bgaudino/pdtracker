@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const checkinChart = document.getElementById('checkin-chart');
 
   new Chart(checkinChart, {
-    type: 'line',
+    type: 'bar',
     data: {
       labels: Object.keys(data.checkin),
       datasets: [
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const tappingChart = document.getElementById('tapping-chart');
 
   new Chart(tappingChart, {
-    type: 'line',
+    type: 'bar',
     data: {
       labels: Object.keys(data.tappingtest),
       datasets: [
@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const typingChart = document.getElementById('typing-chart');
 
   new Chart(typingChart, {
-    type: 'line',
+    type: 'bar',
     data: {
       labels: Object.keys(data.typingtest),
       datasets: [
@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const activityChart = document.getElementById('activity-chart');
 
   new Chart(activityChart, {
-    type: 'line',
+    type: 'bar',
     data: {
       labels: Object.keys(data.activitylog),
       datasets: [
