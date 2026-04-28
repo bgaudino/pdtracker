@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const typingChart = document.getElementById('typing-chart');
 
   new Chart(typingChart, {
-    type: 'bar',
+    type: 'line',
     data: {
       labels: Object.keys(data.typingtest),
       datasets: [
@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const activityChart = document.getElementById('activity-chart');
 
   new Chart(activityChart, {
-    type: 'bar',
+    type: 'line',
     data: {
       labels: Object.keys(data.activitylog),
       datasets: [
