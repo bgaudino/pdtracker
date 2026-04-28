@@ -8,9 +8,10 @@ class User(AbstractEmailUser):
     name = models.CharField(max_length=255, blank=True)
 
     def get_next_dose_message(self):
+        now = timezone.localtime(timezone.now())
         cl = "Carbidopa/Levodopa"
         doses_today = self.medicationlog_set.filter(
-            medication__name=cl, timestamp__date=timezone.now().date()
+            medication__name=cl, timestamp__date=now.date()
         ).count()
         if doses_today >= 3:
             return "Take your next dose when you wake up."
@@ -21,12 +22,11 @@ class User(AbstractEmailUser):
             .first()
         )
         if not last_dose:
-            return
+            return "You can take your first dose now."
 
         taken_at = timezone.localtime(last_dose.timestamp)
         window_start = taken_at + timezone.timedelta(hours=5)
         window_end = taken_at + timezone.timedelta(hours=6)
-        now = timezone.localtime(timezone.now())
         fmt = "%I:%M %p"
         if now >= window_end:
             return "You can take your next dose now."
