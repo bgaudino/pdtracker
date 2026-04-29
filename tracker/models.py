@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.db.models.functions import Length
+from django.urls import reverse
 from django.utils import timezone
 
 from .fields import SeverityField
@@ -99,6 +100,18 @@ class AbstractLog(models.Model):
     class Meta:
         abstract = True
         ordering = ["-timestamp"]
+
+    @classmethod
+    def breadcrumbs(cls):
+        model_name = cls._meta.model_name
+        return [
+            {"name": "Home", "url": reverse("home")},
+            {
+                "name": f"{cls._meta.verbose_name_plural.title()}",
+                "url": reverse(f"{model_name}-list"),
+            },
+            {"name": "New", "url": reverse(f"{model_name}-create")},
+        ]
 
 
 class MedicationLog(AbstractLog):

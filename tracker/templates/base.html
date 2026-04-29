@@ -18,6 +18,9 @@
           <a href="{% url 'home' %}">Home</a>
         {% endif %}
       </header>
+      {% if breadcrumbs %}
+        {% include 'partials/_breadcrumbs.html' %}
+      {% endif %}
       {% block content %}{% endblock %}
     </main>
   </body>

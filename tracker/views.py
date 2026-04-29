@@ -2,7 +2,7 @@ import logging
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import model_to_dict
-from django.urls import reverse_lazy
+from django.urls import reverse
 from django.utils import timezone
 from django.views.generic import CreateView, ListView, TemplateView
 
@@ -35,14 +35,16 @@ class HomeView(LoginRequiredMixin, TemplateView):
 
 
 class BaseLogCreateView(LoginRequiredMixin, CreateView):
-    success_url = reverse_lazy("home")
     template_name = "tracker/log_form.html"
+
+    @property
+    def model_name(self):
+        return self.form_class._meta.model._meta.model_name
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["form_title"] = (
-            f"Create {self.form_class._meta.model._meta.verbose_name}"
-        )
+        context["form_title"] = f"New {self.form_class._meta.model._meta.verbose_name}"
+        context["breadcrumbs"] = self.form_class._meta.model.breadcrumbs()
         return context
 
     def get_form_kwargs(self):
@@ -54,6 +56,9 @@ class BaseLogCreateView(LoginRequiredMixin, CreateView):
         initial = super().get_initial()
         initial["timestamp"] = timezone.now()
         return initial
+
+    def get_success_url(self):
+        return reverse(f"{self.model_name}-list")
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -93,10 +98,13 @@ class TypingTestCreateView(BaseLogCreateView):
 
 
 class BaseLogListView(LoginRequiredMixin, ListView):
-    paginate_by = 100
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["breadcrumbs"] = self.model.breadcrumbs()
+        return context
 
     def get_queryset(self):
-        return self.model.objects.filter(user=self.request.user).order_by("-timestamp")
+        return self.model.objects.filter(user=self.request.user).recent()
 
 
 class CheckInListView(BaseLogListView):
