@@ -137,7 +137,7 @@ def get_logs_for_user(user):
     check_ins = CheckIn.objects.filter(user=user).recent()
     tapping_tests = TappingTest.objects.filter(user=user).recent()
     typing_tests = TypingTest.objects.filter(user=user).recent()
-    activities = ActivityLog.objects.filter(user=user).recent()
+    activities = ActivityLog.objects.filter(user=user, activity__name="Running").recent()
     return check_ins, tapping_tests, typing_tests, activities
 
 
