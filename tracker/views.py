@@ -1,7 +1,15 @@
+import logging
+
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.forms import model_to_dict
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import CreateView, ListView, TemplateView
+
+from ai_chat import client
+from ai_chat.prompts.models import SystemPrompt
+import markdown
+import nh3
 
 from .constants import TYPING_PROMPT
 from .forms import (
@@ -12,6 +20,9 @@ from .forms import (
     TypingTestForm,
 )
 from .models import ActivityLog, CheckIn, MedicationLog, TappingTest, TypingTest
+
+
+logger = logging.getLogger(__name__)
 
 
 class HomeView(LoginRequiredMixin, TemplateView):
@@ -114,17 +125,17 @@ class TypingTestListView(BaseLogListView):
     model = TypingTest
 
 
-class ReportsView(LoginRequiredMixin, TemplateView):
-    template_name = "tracker/reports.html"
+def get_logs_for_user(user):
+    check_ins = CheckIn.objects.filter(user=user).recent()
+    tapping_tests = TappingTest.objects.filter(user=user).recent()
+    typing_tests = TypingTest.objects.filter(user=user).recent()
+    activities = ActivityLog.objects.filter(user=user).recent()
+    return check_ins, tapping_tests, typing_tests, activities
 
-    def get_context_data(self, **kwargs):
-        end = timezone.now()
-        start = end - timezone.timedelta(days=14)
-        reports = {}
-        check_ins = CheckIn.objects.filter(
-            user=self.request.user, timestamp__gte=start, timestamp__lt=end
-        )
-        reports["checkin"] = check_ins.report(
+
+def generate_reports(check_ins, tapping_tests, typing_tests, activities):
+    reports = {
+        "checkin": check_ins.report(
             fields=[
                 "pain",
                 "rigidity",
@@ -132,29 +143,70 @@ class ReportsView(LoginRequiredMixin, TemplateView):
                 "hand_dysfunction",
                 "fatigue",
             ]
-        )
-
-        tapping_tests = TappingTest.objects.filter(
-            user=self.request.user, timestamp__gte=start, timestamp__lt=end
-        )
-        reports["tappingtest"] = tapping_tests.report(fields=["taps_per_second"])
-
-        typing_tests = TypingTest.objects.filter(
-            user=self.request.user, timestamp__gte=start, timestamp__lt=end
-        )
-        reports["typingtest"] = typing_tests.report(fields=["wpm", "accuracy"])
-
-        activities = ActivityLog.objects.filter(
-            user=self.request.user,
-            timestamp__gte=start,
-            timestamp__lt=end,
-            activity__name="Running",
-        )
-        reports["activitylog"] = activities.report(
+        ),
+        "tappingtest": tapping_tests.report(fields=["taps_per_second"]),
+        "typingtest": typing_tests.report(fields=["wpm", "accuracy"]),
+        "activitylog": activities.report(
             fields=["dystonia_onset", "dystonia_severity"]
+        ),
+    }
+    return reports
+
+
+class ReportsView(LoginRequiredMixin, TemplateView):
+    template_name = "tracker/reports.html"
+
+    def get_context_data(self, **kwargs):
+        check_ins, tapping_tests, typing_tests, activities = get_logs_for_user(
+            self.request.user
         )
-
         context = super().get_context_data(**kwargs)
-        context["reports"] = reports
+        context["reports"] = generate_reports(
+            check_ins, tapping_tests, typing_tests, activities
+        )
+        return context
 
+
+class AIAnalysisView(LoginRequiredMixin, TemplateView):
+    template_name = "tracker/ai_analysis.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        system_prompt = SystemPrompt.objects.first()
+        if not system_prompt:
+            return context
+
+        checkins, tapping_tests, typing_tests, activities = get_logs_for_user(
+            self.request.user
+        )
+        reports = generate_reports(checkins, tapping_tests, typing_tests, activities)
+
+        def format_logs(logs):
+            message = (
+                f"Here are the most recent {logs.model._meta.verbose_name_plural}:\n"
+            )
+            return message + ", ".join([str(model_to_dict(log)) for log in logs])
+
+        try:
+            response = client.chat(
+                messages=[
+                    {
+                        "role": "user",
+                        "content": f"Generate a report summarizing the following data: {reports}",
+                    },
+                    *[
+                        {"role": "system", "content": format_logs(logs)}
+                        for logs in [checkins, tapping_tests, typing_tests, activities]
+                    ],
+                ],
+                system_prompt=system_prompt.content,
+            )
+        except Exception as e:
+            logger.error(f"Error generating AI report: {e}")
+            context["ai_report"] = "Error generating AI report."
+            return context
+
+        message = "".join([message for message in response])
+        html = markdown.markdown(message)
+        context["ai_report"] = nh3.clean(html)
         return context

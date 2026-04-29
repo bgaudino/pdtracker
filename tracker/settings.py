@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "ai_chat.prompts",
     "authtools",
     "accounts",
     "tracker",
@@ -138,10 +139,18 @@ SECURE_CSP = {
         CSP.SELF,
         "https://cdn.jsdelivr.net/npm/chart.js",
         "https://cdn.jsdelivr.net/npm/flatpickr",
+        "https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js",
     ],
     "style-src": [
         CSP.SELF,
         "https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css",
         "https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css",
+        "'sha256-faU7yAF8NxuMTNEwVmBz+VcYeIoBQ2EMHW3WaVxCvnk='",  # inline styles for htmx
     ],
+}
+
+AI_CHAT = {
+    "PROVIDER": "google",
+    "MODEL": "gemini-2.5-flash-lite",
+    "API_KEY": os.getenv("GOOGLE_API_KEY"),
 }

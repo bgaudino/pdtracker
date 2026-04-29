@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.db.models.functions import Length
+from django.utils import timezone
 
 from .fields import SeverityField
 
@@ -39,6 +40,12 @@ class Activity(models.Model):
 
 
 class LogQuerySet(models.QuerySet):
+    def recent(self, as_of=None):
+        now = timezone.localtime(timezone.now())
+        if as_of is None:
+            as_of = now - timezone.timedelta(days=14)
+        return self.filter(timestamp__gte=as_of, timestamp__lte=now)
+
     def with_last_dose(self):
         last_dose_subquery = (
             MedicationLog.objects.filter(
@@ -91,6 +98,7 @@ class AbstractLog(models.Model):
 
     class Meta:
         abstract = True
+        ordering = ["-timestamp"]
 
 
 class MedicationLog(AbstractLog):
