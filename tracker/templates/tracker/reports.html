@@ -18,11 +18,7 @@
       <thead>
         <tr>
           <th>Hours Since Last Dose</th>
-          <th>Pain</th>
-          <th>Rigidity</th>
-          <th>Bradykinesia</th>
-          <th>Hand Dysfunction</th>
-          <th>Fatigue</th>
+          <th>Symptom Severity</th>
           <th>Check-ins Logged</th>
         </tr>
       </thead>
@@ -30,11 +26,7 @@
         {% for hours, data in reports.checkin.items %}
           <tr>
             <td>{{ hours }} - {{ hours|add:"1" }}</td>
-            <td>{{ data.pain|floatformat:2 }}</td>
-            <td>{{ data.rigidity|floatformat:2 }}</td>
-            <td>{{ data.bradykinesia|floatformat:2 }}</td>
-            <td>{{ data.hand_dysfunction|floatformat:2 }}</td>
-            <td>{{ data.fatigue|floatformat:2 }}</td>
+            <td>{{ data.overall_severity|floatformat:2 }}</td>
             <td>{{ data.count }}</td>
           </tr>
         {% endfor %}

@@ -8,30 +8,8 @@ document.addEventListener('DOMContentLoaded', function () {
       labels: Object.keys(data.checkin),
       datasets: [
         {
-          label: 'Pain',
-          data: Object.values(data.checkin).map((item) => item.pain),
-          borderWidth: 1,
-        },
-        {
-          label: 'Bradykinesia',
-          data: Object.values(data.checkin).map((item) => item.bradykinesia),
-          borderWidth: 1,
-        },
-        {
-          label: 'Rigidity',
-          data: Object.values(data.checkin).map((item) => item.rigidity),
-          borderWidth: 1,
-        },
-        {
-          label: 'Fatigue',
-          data: Object.values(data.checkin).map((item) => item.fatigue),
-          borderWidth: 1,
-        },
-        {
-          label: 'Hand Dysfunction',
-          data: Object.values(data.checkin).map(
-            (item) => item.hand_dysfunction,
-          ),
+          label: 'Severity',
+          data: Object.values(data.checkin).map((item) => item.overall_severity),
           borderWidth: 1,
         },
       ],

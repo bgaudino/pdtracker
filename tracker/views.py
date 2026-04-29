@@ -137,21 +137,15 @@ def get_logs_for_user(user):
     check_ins = CheckIn.objects.filter(user=user).recent()
     tapping_tests = TappingTest.objects.filter(user=user).recent()
     typing_tests = TypingTest.objects.filter(user=user).recent()
-    activities = ActivityLog.objects.filter(user=user, activity__name="Running").recent()
+    activities = ActivityLog.objects.filter(
+        user=user, activity__name="Running"
+    ).recent()
     return check_ins, tapping_tests, typing_tests, activities
 
 
 def generate_reports(check_ins, tapping_tests, typing_tests, activities):
     reports = {
-        "checkin": check_ins.report(
-            fields=[
-                "pain",
-                "rigidity",
-                "bradykinesia",
-                "hand_dysfunction",
-                "fatigue",
-            ]
-        ),
+        "checkin": check_ins.report(fields=["overall_severity"]),
         "tappingtest": tapping_tests.report(fields=["taps_per_second"]),
         "typingtest": typing_tests.report(fields=["wpm", "accuracy"]),
         "activitylog": activities.report(
@@ -209,12 +203,12 @@ class AIAnalysisView(LoginRequiredMixin, TemplateView):
                 ],
                 system_prompt=system_prompt.content,
             )
+            message = "".join([message for message in response])
         except Exception as e:
             logger.error(f"Error generating AI report: {e}")
             context["ai_report"] = "Error generating AI report."
             return context
 
-        message = "".join([message for message in response])
         html = markdown.markdown(message)
         context["ai_report"] = nh3.clean(html)
         return context

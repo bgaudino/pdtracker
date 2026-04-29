@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from .fields import SeverityField
+from .utils import average
 
 
 class Medication(models.Model):
@@ -76,9 +77,6 @@ class LogQuerySet(models.QuerySet):
         return groups
 
     def report(self, fields):
-        def average(lst):
-            return sum(lst) / len(lst) if lst else 0
-
         groups = self.group_by_hours_since_dose()
         report_data = {}
         for hours, logs in sorted(groups.items()):
@@ -132,6 +130,17 @@ class CheckIn(AbstractLog):
 
     def __str__(self):
         return f"Check-in ({self.timestamp})"
+
+    @property
+    def overall_severity(self):
+        return average([
+            self.pain,
+            self.rigidity,
+            self.bradykinesia,
+            self.tremor,
+            self.hand_dysfunction,
+            self.fatigue,
+        ])
 
 
 class ActivityLog(AbstractLog):
