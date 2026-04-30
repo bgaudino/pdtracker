@@ -14,20 +14,20 @@
     <a class="dashboard-button"
        href="{% url 'tappingtest-list' %}"
        role="button">Tapping 🖐️</a>
-    <a class="dashboard-button secondary"
+    <a class="dashboard-button"
        href="{% url 'typingtest-list' %}"
        role="button">Typing ⌨️</a>
-    <a class="dashboard-button outline"
+    <a class="dashboard-button secondary"
        href="{% url 'reports' %}"
        role="button">View Reports 📈</a>
     {% if request.user.is_superuser %}
-      <a class="dashboard-button contrast"
+      <a class="dashboard-button secondary"
          href="{% url 'admin:index' %}"
          role="button">Admin 🛠️</a>
     {% endif %}
     <form method="post" action="{% url 'logout' %}">
       {% csrf_token %}
-      <button class="dashboard-button contrast" type="submit">Logout 🚪</button>
+      <button class="dashboard-button secondary" type="submit">Logout 🚪</button>
     </form>
   </section>
 {% endblock %}

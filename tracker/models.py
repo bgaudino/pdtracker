@@ -46,7 +46,9 @@ class LogQuerySet(models.QuerySet):
         now = timezone.localtime(timezone.now())
         if as_of is None:
             as_of = now - timezone.timedelta(days=14)
-        return self.filter(timestamp__gte=as_of, timestamp__lte=now)
+        return self.filter(timestamp__gte=as_of, timestamp__lte=now).order_by(
+            "-timestamp"
+        )
 
     def with_last_dose(self):
         last_dose_subquery = (
@@ -133,14 +135,16 @@ class CheckIn(AbstractLog):
 
     @property
     def overall_severity(self):
-        return average([
-            self.pain,
-            self.rigidity,
-            self.bradykinesia,
-            self.tremor,
-            self.hand_dysfunction,
-            self.fatigue,
-        ])
+        return average(
+            [
+                self.pain,
+                self.rigidity,
+                self.bradykinesia,
+                self.tremor,
+                self.hand_dysfunction,
+                self.fatigue,
+            ]
+        )
 
 
 class ActivityLog(AbstractLog):

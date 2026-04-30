@@ -13,10 +13,9 @@
   <body>
     <main class="container">
       <header>
-        <h1>PD Tracker</h1>
-        {% if request.path != '/' %}
-          <a href="{% url 'home' %}">Home</a>
-        {% endif %}
+        <a href="{% url 'home' %}" class="logo">
+          <h1>PD Tracker</h1>
+        </a>
       </header>
       {% if breadcrumbs %}
         {% include 'partials/_breadcrumbs.html' %}

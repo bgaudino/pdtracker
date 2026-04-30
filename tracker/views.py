@@ -100,7 +100,7 @@ class TypingTestCreateView(BaseLogCreateView):
 class BaseLogListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["breadcrumbs"] = self.model.breadcrumbs()
+        context["breadcrumbs"] = self.model.breadcrumbs()[:-1]
         return context
 
     def get_queryset(self):
@@ -166,6 +166,10 @@ class ReportsView(LoginRequiredMixin, TemplateView):
         context["reports"] = generate_reports(
             check_ins, tapping_tests, typing_tests, activities
         )
+        context["breadcrumbs"] = [
+            {"name": "Home", "url": reverse("home")},
+            {"name": "Reports", "url": reverse("reports")},
+        ]
         return context
 
 

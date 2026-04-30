@@ -3,11 +3,26 @@ a[role=button] {
   width: 100%;
 }
 
+article {
+ overflow-x: auto;
+}
+
 main > header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 2rem;
+}
+
+article > header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logo {
+  text-decoration: none;
 }
 
 .dashboard-button {
