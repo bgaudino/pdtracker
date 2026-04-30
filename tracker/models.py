@@ -147,6 +147,15 @@ class CheckIn(AbstractLog):
         )
 
 
+class ActivityLogQuerySet(LogQuerySet):
+    def report(self):
+        return list(
+            self.recent()
+            .filter(activity__name="Running")
+            .values("dystonia_onset", "dystonia_severity")
+        )
+
+
 class ActivityLog(AbstractLog):
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
     duration_minutes = models.PositiveIntegerField(default=0)
@@ -173,6 +182,8 @@ class ActivityLog(AbstractLog):
                 name="dystonia_onset_without_severity",
             ),
         ]
+
+    objects = ActivityLogQuerySet.as_manager()
 
     def __str__(self):
         return f"{self.activity.name} ({self.timestamp})"

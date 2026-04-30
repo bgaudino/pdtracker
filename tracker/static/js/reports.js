@@ -9,7 +9,9 @@ document.addEventListener('DOMContentLoaded', function () {
       datasets: [
         {
           label: 'Severity',
-          data: Object.values(data.checkin).map((item) => item.overall_severity),
+          data: Object.values(data.checkin).map(
+            (item) => item.overall_severity,
+          ),
           borderWidth: 1,
         },
       ],
@@ -112,23 +114,16 @@ document.addEventListener('DOMContentLoaded', function () {
   const activityChart = document.getElementById('activity-chart');
 
   new Chart(activityChart, {
-    type: 'line',
+    type: 'scatter',
     data: {
       labels: Object.keys(data.activitylog),
       datasets: [
         {
-          label: 'Dystonia Onset',
-          data: Object.values(data.activitylog).map(
-            (item) => item.dystonia_onset,
-          ),
-          borderWidth: 1,
-        },
-        {
-          label: 'Dystonia Severity',
-          data: Object.values(data.activitylog).map(
-            (item) => item.dystonia_severity,
-          ),
-          borderWidth: 1,
+          label: 'Dystonia',
+          data: Object.values(data.activitylog).map((item) => ({
+            x: item.dystonia_onset,
+            y: item.dystonia_severity,
+          })),
         },
       ],
     },
@@ -138,14 +133,14 @@ document.addEventListener('DOMContentLoaded', function () {
           beginAtZero: true,
           title: {
             display: true,
-            text: 'Hours Since Last Medication',
+            text: 'Onset Time (minutes)',
           },
         },
         y: {
           beginAtZero: true,
           title: {
             display: true,
-            text: 'Severity',
+            text: 'Dystonia Severity',
           },
         },
       },

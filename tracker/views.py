@@ -148,9 +148,7 @@ def generate_reports(check_ins, tapping_tests, typing_tests, activities):
         "checkin": check_ins.report(fields=["overall_severity"]),
         "tappingtest": tapping_tests.report(fields=["taps_per_second"]),
         "typingtest": typing_tests.report(fields=["wpm", "accuracy"]),
-        "activitylog": activities.report(
-            fields=["dystonia_onset", "dystonia_severity"]
-        ),
+        "activitylog": activities.report(),
     }
     return reports
 
@@ -166,6 +164,7 @@ class ReportsView(LoginRequiredMixin, TemplateView):
         context["reports"] = generate_reports(
             check_ins, tapping_tests, typing_tests, activities
         )
+        print(context["reports"]["activitylog"])
         context["breadcrumbs"] = [
             {"name": "Home", "url": reverse("home")},
             {"name": "Reports", "url": reverse("reports")},
