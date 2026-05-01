@@ -23,26 +23,6 @@ class Medication(models.Model):
         unique_together = ("user", "name", "dose")
 
 
-class Activity(models.Model):
-    class Focus(models.TextChoices):
-        AEROBIC = "aerobic", "Aerobic"
-        STRENGTH = "strength", "Strength"
-        MOBILITY = "mobility", "Mobility"
-        BALANCE = "balance", "Balance"
-        HYBRID = "hybrid", "Hybrid"
-
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    name = models.CharField()
-    focus = models.CharField(choices=Focus.choices)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        unique_together = ("user", "name")
-        verbose_name_plural = "activities"
-
-
 class LogQuerySet(models.QuerySet):
     def recent(self, as_of=None):
         now = timezone.localtime(timezone.now())
@@ -150,52 +130,6 @@ class CheckIn(AbstractLog):
                 self.fatigue,
             ]
         )
-
-
-class ActivityLogQuerySet(LogQuerySet):
-    def report(self):
-        return list(
-            self.recent()
-            .filter(activity__name="Running")
-            .values("dystonia_onset", "dystonia_severity")
-        )
-
-
-class ActivityLog(AbstractLog):
-    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
-    duration_minutes = models.PositiveIntegerField(default=0)
-    dystonia_severity = SeverityField()
-    dystonia_onset = models.PositiveSmallIntegerField(default=0)
-    notes = models.TextField(blank=True)
-
-    class Meta:
-        constraints = [
-            models.CheckConstraint(
-                condition=models.Q(duration_minutes__gte=0),
-                name="duration_non_negative",
-            ),
-            models.CheckConstraint(
-                condition=models.Q(dystonia_severity__gte=0),
-                name="dystonia_severity_non_negative",
-            ),
-            models.CheckConstraint(
-                condition=models.Q(dystonia_onset__gte=0),
-                name="dystonia_onset_non_negative",
-            ),
-            models.CheckConstraint(
-                condition=~models.Q(dystonia_onset__gt=0, dystonia_severity=0),
-                name="dystonia_onset_without_severity",
-            ),
-        ]
-
-    objects = ActivityLogQuerySet.as_manager()
-
-    def __str__(self):
-        return f"{self.activity.name} ({self.timestamp})"
-
-    @property
-    def dystonia_present(self):
-        return bool(self.dystonia_severity)
 
 
 class TappingTest(AbstractLog):
