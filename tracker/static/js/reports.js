@@ -110,40 +110,4 @@ document.addEventListener('DOMContentLoaded', function () {
       },
     },
   });
-
-  const activityChart = document.getElementById('activity-chart');
-
-  new Chart(activityChart, {
-    type: 'scatter',
-    data: {
-      labels: Object.keys(data.activitylog),
-      datasets: [
-        {
-          label: 'Dystonia',
-          data: Object.values(data.activitylog).map((item) => ({
-            x: item.dystonia_onset,
-            y: item.dystonia_severity,
-          })),
-        },
-      ],
-    },
-    options: {
-      scales: {
-        x: {
-          beginAtZero: true,
-          title: {
-            display: true,
-            text: 'Onset Time (minutes)',
-          },
-        },
-        y: {
-          beginAtZero: true,
-          title: {
-            display: true,
-            text: 'Dystonia Severity',
-          },
-        },
-      },
-    },
-  });
 });

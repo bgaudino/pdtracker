@@ -179,7 +179,6 @@ class ReportsView(LoginRequiredMixin, TemplateView):
         check_ins, tapping_tests, typing_tests = get_logs_for_user(self.request.user)
         context = super().get_context_data(**kwargs)
         context["reports"] = generate_reports(check_ins, tapping_tests, typing_tests)
-        print(context["reports"]["activitylog"])
         context["breadcrumbs"] = [
             {"name": "Home", "url": reverse("home")},
             {"name": "Reports", "url": reverse("reports")},
