@@ -8,13 +8,14 @@
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <script src="{% static 'js/loading.js' %}" defer></script>
     {% block extra_head %}{% endblock %}
   </head>
   <body>
     <main class="container">
       <header>
         <a href="{% url 'home' %}" class="logo">
-          <h1>PD Tracker</h1>
+          <h1 aria-busy="false" id="loading-indicator">PD Tracker</h1>
         </a>
       </header>
       {% if breadcrumbs %}
