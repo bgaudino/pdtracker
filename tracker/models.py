@@ -100,6 +100,9 @@ class AbstractLog(models.Model):
     class Meta:
         abstract = True
         ordering = ["-timestamp"]
+        unique_together = [
+            ("user", "timestamp"),
+        ]
 
     @classmethod
     def breadcrumbs(cls):
@@ -247,3 +250,11 @@ class TypingTest(AbstractLog):
 
     def __str__(self):
         return f"Typing Test {self.wpm} WPM at {self.timestamp})"
+
+
+class Workout(AbstractLog):
+    activity_type = models.CharField()
+    data = models.JSONField(default=dict)
+
+    def __str__(self):
+        return f"Workout: {self.activity_type} ({self.timestamp})"

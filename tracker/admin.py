@@ -46,3 +46,8 @@ class TypingTestAdmin(admin.ModelAdmin):
         "accuracy",
         "wpm",
     )
+
+
+@admin.register(models.Workout)
+class WorkoutAdmin(admin.ModelAdmin):
+    readonly_fields = ("user", "timestamp", "activity_type", "data")

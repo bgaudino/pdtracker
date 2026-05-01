@@ -1,15 +1,21 @@
+import json
 import logging
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import model_to_dict
+from django.http import HttpResponse
 from django.urls import reverse
 from django.utils import timezone
-from django.views.generic import CreateView, ListView, TemplateView
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import CreateView, ListView, TemplateView, View
 
 from ai_chat import client
 from ai_chat.prompts.models import SystemPrompt
 import markdown
 import nh3
+
+from accounts.models import ApiToken
 
 from .constants import TYPING_PROMPT
 from .forms import (
@@ -19,7 +25,14 @@ from .forms import (
     TappingTestForm,
     TypingTestForm,
 )
-from .models import ActivityLog, CheckIn, MedicationLog, TappingTest, TypingTest
+from .models import (
+    ActivityLog,
+    CheckIn,
+    MedicationLog,
+    TappingTest,
+    TypingTest,
+    Workout,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -215,3 +228,36 @@ class AIAnalysisView(LoginRequiredMixin, TemplateView):
         html = markdown.markdown(message)
         context["ai_report"] = nh3.clean(html)
         return context
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class AppleHealthImportView(View):
+    def authenticate(self, request):
+        authorization = request.headers.get("Authorization")
+        if not authorization:
+            return None
+        token = authorization.replace("Bearer ", "")
+        return ApiToken.authenticate(token)
+
+    def post(self, request, *args, **kwargs):
+        user = self.authenticate(request)
+        if not user:
+            return HttpResponse("Unauthorized", status=401)
+
+        data = json.loads(request.body)
+        workouts = [
+            Workout(
+                user=user,
+                timestamp=workout["startDate"],
+                activity_type=workout["activityType"],
+                data=workout,
+            )
+            for workout in data.get("workouts", [])
+        ]
+        imported = Workout.objects.bulk_create(
+            workouts,
+            update_conflicts=True,
+            unique_fields=["user", "timestamp"],
+            update_fields=["data"],
+        )
+        return HttpResponse(f"Imported {len(imported)} workouts")

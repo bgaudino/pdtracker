@@ -31,4 +31,9 @@ urlpatterns = [
     path("typingtest/", views.TypingTestCreateView.as_view(), name="typingtest-create"),
     path("typingtests/", views.TypingTestListView.as_view(), name="typingtest-list"),
     path("ai-analysis/", views.AIAnalysisView.as_view(), name="ai-analysis"),
+    path(
+        "apple-health-import/",
+        views.AppleHealthImportView.as_view(),
+        name="apple-health-import",
+    ),
 ]
