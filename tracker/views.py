@@ -26,6 +26,7 @@ from .forms import (
 )
 from .models import (
     CheckIn,
+    HealthMetric,
     MedicationLog,
     TappingTest,
     TypingTest,
@@ -253,10 +254,32 @@ class AppleHealthImportView(View):
             )
             for workout in data.get("workouts", [])
         ]
-        imported = Workout.objects.bulk_create(
+        imported_workouts = Workout.objects.bulk_create(
             workouts,
             update_conflicts=True,
             unique_fields=["user", "timestamp"],
             update_fields=["data"],
         )
-        return HttpResponse(f"Imported {len(imported)} workouts")
+
+        health_metrics = [
+            HealthMetric(
+                user=user,
+                date=metric["startDate"],
+                data_type=metric["type"],
+                value=metric["value"],
+                unit=metric["unit"],
+            )
+            for metric in data.get("exportInfo", {}).get("dataTypes", [])
+        ]
+        imported_health_metrics = HealthMetric.objects.bulk_create(
+            health_metrics,
+            update_conflicts=True,
+            unique_fields=["user", "date", "data_type"],
+            update_fields=["value", "unit"],
+        )
+        message = "Successfully imported data from Apple Health."
+        if imported_workouts:
+            message += f" Imported {len(imported_workouts)} workouts."
+        if imported_health_metrics:
+            message += f" Imported {len(imported_health_metrics)} health metrics."
+        return HttpResponse(message)

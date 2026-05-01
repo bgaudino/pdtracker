@@ -262,6 +262,21 @@ class Workout(AbstractLog):
         return f"{minutes}:{seconds:02} per {'km' if distance == self.distance_km else 'mile'}"
 
 
+class HealthMetric(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    data_type = models.CharField()
+    value = models.DecimalField(max_digits=10, decimal_places=2)
+    unit = models.CharField()
+    date = models.DateField()
+
+    class Meta:
+        ordering = ["data_type", "-date"]
+        unique_together = ("user", "data_type", "date")
+
+    def __str__(self):
+        return f"{self.data_type}: {self.value} {self.unit} at {self.date}"
+
+
 class ExerciseDystonia(models.Model):
     workout = models.OneToOneField(
         Workout, on_delete=models.CASCADE, limit_choices_to={"activity_type": "running"}

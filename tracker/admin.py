@@ -47,3 +47,8 @@ class ExerciseDystoniaInline(admin.TabularInline):
 class WorkoutAdmin(admin.ModelAdmin):
     readonly_fields = ("user", "timestamp", "activity_type", "data")
     inlines = [ExerciseDystoniaInline]
+
+
+@admin.register(models.HealthMetric)
+class HealthMetricAdmin(admin.ModelAdmin):
+    pass
