@@ -4,26 +4,25 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tracker', '0004_remove_activitylog_dystonia_present_and_more'),
+        ("tracker", "0004_remove_activitylog_dystonia_present_and_more"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='checkin',
-            options={'ordering': ['-timestamp']},
+            name="checkin",
+            options={"ordering": ["-timestamp"]},
         ),
         migrations.AlterModelOptions(
-            name='medicationlog',
-            options={'ordering': ['-timestamp']},
+            name="medicationlog",
+            options={"ordering": ["-timestamp"]},
         ),
         migrations.AlterModelOptions(
-            name='tappingtest',
-            options={'ordering': ['-timestamp']},
+            name="tappingtest",
+            options={"ordering": ["-timestamp"]},
         ),
         migrations.AlterModelOptions(
-            name='typingtest',
-            options={'ordering': ['-timestamp']},
+            name="typingtest",
+            options={"ordering": ["-timestamp"]},
         ),
     ]

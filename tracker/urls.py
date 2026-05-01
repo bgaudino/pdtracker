@@ -14,15 +14,11 @@ urlpatterns = [
         name="medicationlog-create",
     ),
     path(
-        "activitylog/", views.ActivityLogCreateView.as_view(), name="activitylog-create"
-    ),
-    path(
         "medicationlogs/",
         views.MedicationLogListView.as_view(),
         name="medicationlog-list",
     ),
     path("checkins/", views.CheckInListView.as_view(), name="checkin-list"),
-    path("activitylogs/", views.ActivityLogListView.as_view(), name="activitylog-list"),
     path("reports/", views.ReportsView.as_view(), name="reports"),
     path(
         "tappingtest/", views.TappingTestCreateView.as_view(), name="tappingtest-create"
@@ -30,6 +26,10 @@ urlpatterns = [
     path("tappingtests/", views.TappingTestListView.as_view(), name="tappingtest-list"),
     path("typingtest/", views.TypingTestCreateView.as_view(), name="typingtest-create"),
     path("typingtests/", views.TypingTestListView.as_view(), name="typingtest-list"),
+    path("workouts/", views.WorkoutListView.as_view(), name="workout-list"),
+    path(
+        "workouts/<int:pk>/", views.WorkoutDetailView.as_view(), name="workout-detail"
+    ),
     path("ai-analysis/", views.AIAnalysisView.as_view(), name="ai-analysis"),
     path(
         "apple-health-import/",

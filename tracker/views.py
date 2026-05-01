@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import CreateView, ListView, TemplateView, View
+from django.views.generic import CreateView, DetailView, ListView, TemplateView, View
 
 from ai_chat import client
 from ai_chat.prompts.models import SystemPrompt
@@ -19,14 +19,12 @@ from accounts.models import ApiToken
 
 from .constants import TYPING_PROMPT
 from .forms import (
-    ActivityLogForm,
     CheckInForm,
     MedicationLogForm,
     TappingTestForm,
     TypingTestForm,
 )
 from .models import (
-    ActivityLog,
     CheckIn,
     MedicationLog,
     TappingTest,
@@ -86,10 +84,6 @@ class MedicationLogCreateView(BaseLogCreateView):
     form_class = MedicationLogForm
 
 
-class ActivityLogCreateView(BaseLogCreateView):
-    form_class = ActivityLogForm
-
-
 class TappingTestCreateView(BaseLogCreateView):
     form_class = TappingTestForm
     template_name = "tracker/tappingtest.html"
@@ -131,13 +125,6 @@ class MedicationLogListView(BaseLogListView):
         return super().get_queryset().select_related("medication")
 
 
-class ActivityLogListView(BaseLogListView):
-    model = ActivityLog
-
-    def get_queryset(self):
-        return super().get_queryset().select_related("activity")
-
-
 class TappingTestListView(BaseLogListView):
     model = TappingTest
 
@@ -146,22 +133,41 @@ class TypingTestListView(BaseLogListView):
     model = TypingTest
 
 
+class WorkoutListView(BaseLogListView):
+    model = Workout
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["breadcrumbs"] = self.model.breadcrumbs()
+        return context
+
+
+class WorkoutDetailView(LoginRequiredMixin, DetailView):
+    model = Workout
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["breadcrumbs"] = self.model.breadcrumbs() + [
+            {"name": "Details", "url": ""},
+        ]
+        return context
+
+    def get_queryset(self):
+        return super().get_queryset().filter(user=self.request.user)
+
+
 def get_logs_for_user(user):
     check_ins = CheckIn.objects.filter(user=user).recent()
     tapping_tests = TappingTest.objects.filter(user=user).recent()
     typing_tests = TypingTest.objects.filter(user=user).recent()
-    activities = ActivityLog.objects.filter(
-        user=user, activity__name="Running"
-    ).recent()
-    return check_ins, tapping_tests, typing_tests, activities
+    return check_ins, tapping_tests, typing_tests
 
 
-def generate_reports(check_ins, tapping_tests, typing_tests, activities):
+def generate_reports(check_ins, tapping_tests, typing_tests):
     reports = {
         "checkin": check_ins.report(fields=["overall_severity"]),
         "tappingtest": tapping_tests.report(fields=["taps_per_second"]),
         "typingtest": typing_tests.report(fields=["wpm", "accuracy"]),
-        "activitylog": activities.report(),
     }
     return reports
 
@@ -170,13 +176,9 @@ class ReportsView(LoginRequiredMixin, TemplateView):
     template_name = "tracker/reports.html"
 
     def get_context_data(self, **kwargs):
-        check_ins, tapping_tests, typing_tests, activities = get_logs_for_user(
-            self.request.user
-        )
+        check_ins, tapping_tests, typing_tests = get_logs_for_user(self.request.user)
         context = super().get_context_data(**kwargs)
-        context["reports"] = generate_reports(
-            check_ins, tapping_tests, typing_tests, activities
-        )
+        context["reports"] = generate_reports(check_ins, tapping_tests, typing_tests)
         print(context["reports"]["activitylog"])
         context["breadcrumbs"] = [
             {"name": "Home", "url": reverse("home")},
@@ -194,10 +196,8 @@ class AIAnalysisView(LoginRequiredMixin, TemplateView):
         if not system_prompt:
             return context
 
-        checkins, tapping_tests, typing_tests, activities = get_logs_for_user(
-            self.request.user
-        )
-        reports = generate_reports(checkins, tapping_tests, typing_tests, activities)
+        checkins, tapping_tests, typing_tests = get_logs_for_user(self.request.user)
+        reports = generate_reports(checkins, tapping_tests, typing_tests)
 
         def format_logs(logs):
             message = (
@@ -214,7 +214,7 @@ class AIAnalysisView(LoginRequiredMixin, TemplateView):
                     },
                     *[
                         {"role": "system", "content": format_logs(logs)}
-                        for logs in [checkins, tapping_tests, typing_tests, activities]
+                        for logs in [checkins, tapping_tests, typing_tests]
                     ],
                 ],
                 system_prompt=system_prompt.content,

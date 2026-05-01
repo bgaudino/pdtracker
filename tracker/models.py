@@ -1,3 +1,5 @@
+import re
+
 from django.conf import settings
 from django.db import models
 from django.db.models.functions import Length
@@ -255,6 +257,84 @@ class TypingTest(AbstractLog):
 class Workout(AbstractLog):
     activity_type = models.CharField()
     data = models.JSONField(default=dict)
+    notes = models.TextField(blank=True)
 
     def __str__(self):
         return f"Workout: {self.activity_type} ({self.timestamp})"
+
+    @classmethod
+    def breadcrumbs(cls):
+        return [
+            {"name": "Home", "url": reverse("home")},
+            {"name": "Workouts", "url": reverse("workout-list")},
+        ]
+
+    @property
+    def activity_type_display(self):
+        display = re.split(r"(?=[A-Z])", self.activity_type)
+        return " ".join(display).title()
+
+    @property
+    def statistics(self):
+        return self.data.get("statistics", {})
+
+    @property
+    def heart_rate(self):
+        return self.statistics.get("HKQuantityTypeIdentifierHeartRate", {})
+
+    @property
+    def duration(self):
+        seconds = self.data.get("duration", 0)
+        hours, remainder = divmod(seconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+        if hours > 0:
+            return f"{int(hours)}:{int(minutes):02}:{int(seconds):02}"
+        return f"{int(minutes)}:{int(seconds):02}"
+
+    @property
+    def steps(self):
+        return self.statistics.get("HKQuantityTypeIdentifierStepCount", {}).get("sum")
+
+    @property
+    def distance(self):
+        return self.statistics.get(
+            "HKQuantityTypeIdentifierDistanceWalkingRunning", {}
+        ).get("sum", 0)
+
+    @property
+    def distance_km(self):
+        return self.distance / 1000
+
+    @property
+    def distance_miles(self):
+        return self.distance / 1609.34
+
+    @property
+    def pace_km(self):
+        return self._pace(self.distance_km)
+
+    @property
+    def pace_miles(self):
+        return self._pace(self.distance_miles)
+
+    def _pace(self, distance):
+        duration = self.data.get("duration", 0)
+        if not (duration and distance):
+            return
+        total_minutes = duration / 60
+        pace = total_minutes / distance
+        minutes = int(pace)
+        seconds = int((pace - minutes) * 60)
+        return f"{minutes}:{seconds:02} per {'km' if distance == self.distance_km else 'mile'}"
+
+
+class ExerciseDystonia(models.Model):
+    workout = models.OneToOneField(
+        Workout, on_delete=models.CASCADE, limit_choices_to={"activity_type": "running"}
+    )
+    onset_minutes = models.PositiveSmallIntegerField()
+    severity = SeverityField()
+    notes = models.TextField(blank=True)
+
+    def __str__(self):
+        return f"Dystonia details for {self.workout}"

@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import ActivityLog, CheckIn, MedicationLog, TappingTest, TypingTest
+from .models import CheckIn, MedicationLog, TappingTest, TypingTest
 
 
 class BaseLogForm(forms.ModelForm):
@@ -13,6 +13,19 @@ class BaseLogForm(forms.ModelForm):
     def __init__(self, *args, user, **kwargs):
         super().__init__(*args, **kwargs)
         self.user = user
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if (
+            not self.instance.pk
+            and self._meta.model.objects.filter(
+                user=self.user, timestamp=cleaned_data.get("timestamp")
+            ).exists()
+        ):
+            raise forms.ValidationError(
+                "You have already logged an entry for this timestamp."
+            )
+        return cleaned_data
 
 
 class CheckInForm(BaseLogForm):
@@ -28,23 +41,6 @@ class CheckInForm(BaseLogForm):
             "notes",
             "timestamp",
         ]
-
-
-class ActivityLogForm(BaseLogForm):
-    class Meta:
-        model = ActivityLog
-        fields = [
-            "activity",
-            "duration_minutes",
-            "notes",
-            "timestamp",
-            "dystonia_severity",
-            "dystonia_onset",
-        ]
-
-    def __init__(self, *args, user, **kwargs):
-        super().__init__(*args, user=user, **kwargs)
-        self.fields["activity"].queryset = user.activity_set.all()
 
 
 class MedicationLogForm(BaseLogForm):

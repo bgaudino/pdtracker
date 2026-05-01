@@ -6,42 +6,55 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tracker', '0005_alter_checkin_options_alter_medicationlog_options_and_more'),
+        ("tracker", "0005_alter_checkin_options_alter_medicationlog_options_and_more"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AlterUniqueTogether(
-            name='checkin',
-            unique_together={('user', 'timestamp')},
+            name="checkin",
+            unique_together={("user", "timestamp")},
         ),
         migrations.AlterUniqueTogether(
-            name='medicationlog',
-            unique_together={('user', 'timestamp')},
+            name="medicationlog",
+            unique_together={("user", "timestamp")},
         ),
         migrations.AlterUniqueTogether(
-            name='tappingtest',
-            unique_together={('user', 'timestamp')},
+            name="tappingtest",
+            unique_together={("user", "timestamp")},
         ),
         migrations.AlterUniqueTogether(
-            name='typingtest',
-            unique_together={('user', 'timestamp')},
+            name="typingtest",
+            unique_together={("user", "timestamp")},
         ),
         migrations.CreateModel(
-            name='Workout',
+            name="Workout",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('timestamp', models.DateTimeField()),
-                ('activity_type', models.CharField()),
-                ('data', models.JSONField(default=dict)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("timestamp", models.DateTimeField()),
+                ("activity_type", models.CharField()),
+                ("data", models.JSONField(default=dict)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'ordering': ['-timestamp'],
-                'abstract': False,
-                'unique_together': {('user', 'timestamp')},
+                "ordering": ["-timestamp"],
+                "abstract": False,
+                "unique_together": {("user", "timestamp")},
             },
         ),
     ]
