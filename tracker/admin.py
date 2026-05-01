@@ -51,4 +51,4 @@ class WorkoutAdmin(admin.ModelAdmin):
 
 @admin.register(models.HealthMetric)
 class HealthMetricAdmin(admin.ModelAdmin):
-    pass
+    list_filter = ("data_type",)

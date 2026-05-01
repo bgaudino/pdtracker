@@ -260,17 +260,19 @@ class AppleHealthImportView(View):
             unique_fields=["user", "timestamp"],
             update_fields=["data"],
         )
-
-        health_metrics = [
-            HealthMetric(
-                user=user,
-                date=metric["startDate"],
-                data_type=metric["type"],
-                value=metric["value"],
-                unit=metric["unit"],
-            )
-            for metric in data.get("exportInfo", {}).get("dataTypes", [])
-        ]
+        data_types = data.get("exportInfo", {}).get("dataTypes", [])
+        health_metrics = []
+        for data_type in data_types:
+            for metric in data[data_type]:
+                health_metrics.append(
+                    HealthMetric(
+                        user=user,
+                        date=metric["date"],
+                        data_type=data_type,
+                        value=metric["value"],
+                        unit=metric["unit"],
+                    )
+                )
         imported_health_metrics = HealthMetric.objects.bulk_create(
             health_metrics,
             update_conflicts=True,
