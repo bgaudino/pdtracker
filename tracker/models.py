@@ -129,6 +129,12 @@ class CheckIn(AbstractLog):
             ]
         )
 
+    @property
+    def overall_severity_display(self):
+        from .fields import Severity
+
+        return Severity(round(self.overall_severity)).label
+
 
 class TappingTest(AbstractLog):
     taps = models.PositiveIntegerField()

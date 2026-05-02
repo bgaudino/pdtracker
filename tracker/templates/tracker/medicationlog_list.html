@@ -8,17 +8,17 @@
     <table class="table">
       <thead>
         <tr>
+          <th>Timestamp</th>
           <th>Medication Name</th>
           <th>Dosage</th>
-          <th>Timestamp</th>
         </tr>
       </thead>
       <tbody>
         {% for log in object_list %}
           <tr>
+            <td>{{ log.timestamp }}</td>
             <td>{{ log.medication.name }}</td>
             <td>{{ log.medication.dose }}</td>
-            <td>{{ log.timestamp }}</td>
           </tr>
         {% empty %}
           <tr>

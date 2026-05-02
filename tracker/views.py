@@ -118,7 +118,11 @@ class BaseLogListView(LoginRequiredMixin, ListView):
         return context
 
     def get_queryset(self):
-        return self.model.objects.filter(user=self.request.user).recent()
+        return (
+            self.model.objects.filter(user=self.request.user)
+            .recent()
+            .with_time_since_dose()
+        )
 
 
 class CheckInListView(BaseLogListView):
