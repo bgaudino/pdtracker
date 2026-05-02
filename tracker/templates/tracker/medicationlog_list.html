@@ -3,7 +3,10 @@
   <article>
     <header>
       <h2>Medication Logs</h2>
-      <a href="{% url 'medicationlog-create' %}" role="button">New Medication Log</a>
+      <a href="{% url 'medicationlog-create' %}"
+         role="button"
+         aria-label="New Medication Log"
+         class="add-link">Add +</a>
     </header>
     <table class="table">
       <thead>

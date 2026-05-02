@@ -4,7 +4,10 @@
   <article>
     <header>
       <h3>Recent Check-Ins</h3>
-      <a href="{% url 'checkin-create' %}" role="button">New Check-In</a>
+      <a href="{% url 'checkin-create' %}"
+         role="button"
+         aria-label="New Check-In"
+         class="add-link">Add +</a>
     </header>
     <table class="table">
       <thead>
