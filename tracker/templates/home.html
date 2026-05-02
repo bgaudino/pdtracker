@@ -19,7 +19,10 @@
        role="button">Typing ⌨️</a>
     <a class="dashboard-button secondary"
        href="{% url 'reports' %}"
-       role="button">View Reports 📈</a>
+       role="button">Reports 📈</a>
+    <a class="dashboard-button secondary"
+       href="{% url 'healthmetric-summary' %}"
+       role="button">Health ❤️</a>
     {% if request.user.is_superuser %}
       <a class="dashboard-button secondary"
          href="{% url 'admin:index' %}"

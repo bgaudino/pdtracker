@@ -6,26 +6,42 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tracker', '0008_alter_activity_unique_together_remove_activity_user_and_more'),
+        (
+            "tracker",
+            "0008_alter_activity_unique_together_remove_activity_user_and_more",
+        ),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='HealthMetric',
+            name="HealthMetric",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('data_type', models.CharField()),
-                ('value', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('unit', models.CharField()),
-                ('date', models.DateField()),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("data_type", models.CharField()),
+                ("value", models.DecimalField(decimal_places=2, max_digits=10)),
+                ("unit", models.CharField()),
+                ("date", models.DateField()),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'ordering': ['data_type', '-date'],
-                'unique_together': {('user', 'data_type', 'date')},
+                "ordering": ["data_type", "-date"],
+                "unique_together": {("user", "data_type", "date")},
             },
         ),
     ]

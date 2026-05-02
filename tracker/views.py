@@ -2,6 +2,8 @@ import json
 import logging
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Avg, DecimalField
+from django.db.models.functions import Coalesce
 from django.forms import model_to_dict
 from django.http import HttpResponse
 from django.urls import reverse
@@ -232,6 +234,45 @@ class AIAnalysisView(LoginRequiredMixin, TemplateView):
         return context
 
 
+class HealthMetricSummaryView(LoginRequiredMixin, TemplateView):
+    template_name = "tracker/healthmetric_summary.html"
+
+    def get_metrics(self, data_type):
+        user = self.request.user
+        qs = user.healthmetric_set.filter(data_type=data_type)
+        today = timezone.now().date()
+        two_weeks_ago = today - timezone.timedelta(days=14)
+        two_week_qs = qs.filter(date__gte=two_weeks_ago, date__lt=today)
+        latest = qs.order_by("-date").first()
+        latest_value = latest.value if latest else None
+        avg = two_week_qs.aggregate(
+            avg_value=Coalesce(Avg("value"), 0, output_field=DecimalField())
+        )["avg_value"]
+        return {
+            "latest": latest_value,
+            "avg": avg,
+        }
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["breadcrumbs"] = [
+            {"name": "Home", "url": reverse("home")},
+            {"name": "Health Metrics", "url": ""},
+        ]
+        context["metrics"] = {
+            dt: self.get_metrics(dt)
+            for dt in (
+                "stepCount",
+                "exerciseMinutes",
+                "vo2max",
+                "restingHeartRate",
+                "weight",
+                "dietaryProtein",
+            )
+        }
+        return context
+
+
 class HealthMetricListView(LoginRequiredMixin, ListView):
     model = HealthMetric
     allow_empty = False
@@ -247,6 +288,7 @@ class HealthMetricListView(LoginRequiredMixin, ListView):
         context["title"] = title
         context["breadcrumbs"] = [
             {"name": "Home", "url": reverse("home")},
+            {"name": "Health Metrics", "url": reverse("healthmetric-summary")},
             {"name": f"{title} Metrics", "url": ""},
         ]
         context["data"] = [model_to_dict(metric) for metric in context["object_list"]]

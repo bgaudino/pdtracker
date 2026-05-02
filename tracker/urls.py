@@ -31,6 +31,11 @@ urlpatterns = [
         "workouts/<int:pk>/", views.WorkoutDetailView.as_view(), name="workout-detail"
     ),
     path(
+        "health-metrics/",
+        views.HealthMetricSummaryView.as_view(),
+        name="healthmetric-summary",
+    ),
+    path(
         "health-metrics/<slug:data_type>/",
         views.HealthMetricListView.as_view(),
         name="healthmetric-list",
