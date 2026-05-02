@@ -201,6 +201,24 @@ class Workout(AbstractLog):
         return f"Workout: {self.activity_type} ({self.timestamp})"
 
     @classmethod
+    def from_json(cls, user, data):
+        workouts = [
+            cls(
+                user=user,
+                timestamp=workout["startDate"],
+                activity_type=workout["activityType"],
+                data=workout,
+            )
+            for workout in data.get("workouts", [])
+        ]
+        return cls.objects.bulk_create(
+            workouts,
+            update_conflicts=True,
+            unique_fields=["user", "timestamp"],
+            update_fields=["data"],
+        )
+
+    @classmethod
     def breadcrumbs(cls):
         return [
             {"name": "Home", "url": reverse("home")},
@@ -278,6 +296,28 @@ class HealthMetric(models.Model):
 
     def __str__(self):
         return f"{self.data_type}: {self.value} {self.unit} at {self.date}"
+
+    @classmethod
+    def from_json(cls, user, data):
+        data_types = data.get("exportInfo", {}).get("dataTypes", [])
+        health_metrics = []
+        for data_type in data_types:
+            for metric in data[data_type]:
+                health_metrics.append(
+                    HealthMetric(
+                        user=user,
+                        date=metric["date"],
+                        data_type=data_type,
+                        value=metric["value"],
+                        unit=metric["unit"],
+                    )
+                )
+        return HealthMetric.objects.bulk_create(
+            health_metrics,
+            update_conflicts=True,
+            unique_fields=["user", "date", "data_type"],
+            update_fields=["value", "unit"],
+        )
 
 
 class ExerciseDystonia(models.Model):

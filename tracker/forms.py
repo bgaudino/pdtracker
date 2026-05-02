@@ -1,4 +1,5 @@
 from django import forms
+from django.core.validators import FileExtensionValidator
 
 from .models import (
     CheckIn,
@@ -94,3 +95,9 @@ class ExerciseDystoniaForm(forms.ModelForm):
     class Meta:
         model = ExerciseDystonia
         fields = ["onset_minutes", "severity", "notes"]
+
+
+class AppleHealthImportForm(forms.Form):
+    file = forms.FileField(
+        validators=[FileExtensionValidator(allowed_extensions=["json"])]
+    )

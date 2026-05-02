@@ -36,6 +36,11 @@ urlpatterns = [
         name="healthmetric-summary",
     ),
     path(
+        "health-metrics/import/",
+        views.AppleHealthFileImportView.as_view(),
+        name="healthmetric-import",
+    ),
+    path(
         "health-metrics/<slug:data_type>/",
         views.HealthMetricListView.as_view(),
         name="healthmetric-list",
@@ -43,7 +48,7 @@ urlpatterns = [
     path("ai-analysis/", views.AIAnalysisView.as_view(), name="ai-analysis"),
     path(
         "apple-health-import/",
-        views.AppleHealthImportView.as_view(),
+        views.AppleHealthImportApiView.as_view(),
         name="apple-health-import",
     ),
 ]

@@ -11,7 +11,14 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import CreateView, DetailView, ListView, TemplateView, View
+from django.views.generic import (
+    CreateView,
+    DetailView,
+    FormView,
+    ListView,
+    TemplateView,
+    View,
+)
 
 from ai_chat import client
 from ai_chat.prompts.models import SystemPrompt
@@ -22,6 +29,7 @@ from accounts.models import ApiToken
 
 from .constants import TYPING_PROMPT
 from .forms import (
+    AppleHealthImportForm,
     CheckInForm,
     ExerciseDystoniaForm,
     HealthMetricForm,
@@ -326,16 +334,19 @@ class HealthMetricListView(LoginRequiredMixin, ListView):
         return context
 
     def get_queryset(self):
+        last_month = timezone.now().date() - timezone.timedelta(days=30)
         return (
             super()
             .get_queryset()
-            .filter(user=self.request.user, data_type=self.data_type)
+            .filter(
+                user=self.request.user, data_type=self.data_type, date__gte=last_month
+            )
             .order_by("date")
         )
 
 
 @method_decorator(csrf_exempt, name="dispatch")
-class AppleHealthImportView(View):
+class AppleHealthImportApiView(View):
     def authenticate(self, request):
         authorization = request.headers.get("Authorization")
         if not authorization:
@@ -349,43 +360,39 @@ class AppleHealthImportView(View):
             return HttpResponse("Unauthorized", status=401)
 
         data = json.loads(request.body)
-        workouts = [
-            Workout(
-                user=user,
-                timestamp=workout["startDate"],
-                activity_type=workout["activityType"],
-                data=workout,
-            )
-            for workout in data.get("workouts", [])
-        ]
-        imported_workouts = Workout.objects.bulk_create(
-            workouts,
-            update_conflicts=True,
-            unique_fields=["user", "timestamp"],
-            update_fields=["data"],
-        )
-        data_types = data.get("exportInfo", {}).get("dataTypes", [])
-        health_metrics = []
-        for data_type in data_types:
-            for metric in data[data_type]:
-                health_metrics.append(
-                    HealthMetric(
-                        user=user,
-                        date=metric["date"],
-                        data_type=data_type,
-                        value=metric["value"],
-                        unit=metric["unit"],
-                    )
-                )
-        imported_health_metrics = HealthMetric.objects.bulk_create(
-            health_metrics,
-            update_conflicts=True,
-            unique_fields=["user", "date", "data_type"],
-            update_fields=["value", "unit"],
-        )
+        workouts = Workout.from_json(user, data)
+        health_metrics = HealthMetric.from_json(user, data)
         message = "Successfully imported data from Apple Health."
-        if imported_workouts:
-            message += f" Imported {len(imported_workouts)} workouts."
-        if imported_health_metrics:
-            message += f" Imported {len(imported_health_metrics)} health metrics."
+        if workouts:
+            message += f" Imported {len(workouts)} workouts."
+        if health_metrics:
+            message += f" Imported {len(health_metrics)} health metrics."
         return HttpResponse(message)
+
+
+class AppleHealthFileImportView(LoginRequiredMixin, FormView):
+    form_class = AppleHealthImportForm
+    template_name = "tracker/healthmetric_import.html"
+
+    def form_valid(self, form):
+        user = self.request.user
+        try:
+            data = json.loads(form.cleaned_data["file"].read())
+        except json.JSONDecodeError:
+            form.add_error("file", "Invalid JSON file.")
+            return self.form_invalid(form)
+        try:
+            self.workouts = Workout.from_json(user, data)
+            self.health_metrics = HealthMetric.from_json(user, data)
+        except Exception as e:
+            logger.error(f"Error importing Apple Health data: {e}")
+            form.add_error("file", "Error importing data")
+            return self.form_invalid(form)
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        if getattr(self, "workouts", None):
+            return reverse("workout-list")
+        if getattr(self, "health_metrics", None):
+            return reverse("healthmetric-summary")
+        return reverse("home")

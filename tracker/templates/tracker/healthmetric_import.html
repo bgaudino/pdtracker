@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+  <article>
+    <header>
+      <h2>Import Apple Health Data</h2>
+    </header>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Import</button>
+    </form>
+  </article>
+{% endblock %}
