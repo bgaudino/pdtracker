@@ -6,6 +6,7 @@ from django.db.models import Avg, DecimalField
 from django.db.models.functions import Coalesce
 from django.forms import model_to_dict
 from django.http import HttpResponse
+from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
@@ -22,6 +23,7 @@ from accounts.models import ApiToken
 from .constants import TYPING_PROMPT
 from .forms import (
     CheckInForm,
+    ExerciseDystoniaForm,
     HealthMetricForm,
     MedicationLogForm,
     TappingTestForm,
@@ -150,15 +152,37 @@ class WorkoutListView(BaseLogListView):
 class WorkoutDetailView(LoginRequiredMixin, DetailView):
     model = Workout
 
+    def get_form(self):
+        dystonia = getattr(self.object, "exercisedystonia", None)
+        data = self.request.POST if self.request.method == "POST" else None
+        return ExerciseDystoniaForm(instance=dystonia, data=data)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["breadcrumbs"] = self.model.breadcrumbs() + [
             {"name": "Details", "url": ""},
         ]
+        if context["object"].activity_type == "running":
+            context["form"] = self.get_form()
         return context
 
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = self.get_form()
+        if form.is_valid():
+            dystonia = form.save(commit=False)
+            dystonia.workout = self.object
+            dystonia.save()
+            return redirect("workout-detail", pk=self.object.pk)
+        return self.render_to_response(self.get_context_data(form=form))
+
     def get_queryset(self):
-        return super().get_queryset().filter(user=self.request.user)
+        return (
+            super()
+            .get_queryset()
+            .filter(user=self.request.user)
+            .select_related("exercisedystonia")
+        )
 
 
 def get_logs_for_user(user):

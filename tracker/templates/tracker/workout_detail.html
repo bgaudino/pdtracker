@@ -36,4 +36,16 @@
       </p>
     {% endif %}
   </article>
+  {% if form %}
+    <article>
+      <header>
+        <h4>Exercise-Induced Dystonia</h4>
+      </header>
+      <form method="post">
+        {% csrf_token %}
+        {{ form }}
+        <button type="submit">Save</button>
+      </form>
+    </article>
+  {% endif %}
 {% endblock %}

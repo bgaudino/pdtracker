@@ -1,6 +1,13 @@
 from django import forms
 
-from .models import CheckIn, HealthMetric, MedicationLog, TappingTest, TypingTest
+from .models import (
+    CheckIn,
+    ExerciseDystonia,
+    HealthMetric,
+    MedicationLog,
+    TappingTest,
+    TypingTest,
+)
 from .utils import camel_to_title, camel_to_snake
 
 
@@ -81,3 +88,9 @@ class HealthMetricForm(forms.Form):
         self.fields["data_type"].choices = [
             (camel_to_snake(dt), camel_to_title(dt)) for dt in data_types
         ]
+
+
+class ExerciseDystoniaForm(forms.ModelForm):
+    class Meta:
+        model = ExerciseDystonia
+        fields = ["onset_minutes", "severity", "notes"]
