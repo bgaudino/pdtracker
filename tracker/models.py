@@ -1,5 +1,3 @@
-import re
-
 from django.conf import settings
 from django.db import models
 from django.db.models.functions import Length
@@ -7,7 +5,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from .fields import SeverityField
-from .utils import average
+from .utils import average, camel_to_title
 
 
 class Medication(models.Model):
@@ -205,8 +203,7 @@ class Workout(AbstractLog):
 
     @property
     def activity_type_display(self):
-        display = re.split(r"(?=[A-Z])", self.activity_type)
-        return " ".join(display).title()
+        return camel_to_title(self.activity_type)
 
     @property
     def statistics(self):

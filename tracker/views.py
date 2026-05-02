@@ -20,6 +20,7 @@ from accounts.models import ApiToken
 from .constants import TYPING_PROMPT
 from .forms import (
     CheckInForm,
+    HealthMetricForm,
     MedicationLogForm,
     TappingTestForm,
     TypingTestForm,
@@ -32,6 +33,7 @@ from .models import (
     TypingTest,
     Workout,
 )
+from .utils import camel_to_title, snake_to_camel
 
 
 logger = logging.getLogger(__name__)
@@ -228,6 +230,38 @@ class AIAnalysisView(LoginRequiredMixin, TemplateView):
         html = markdown.markdown(message)
         context["ai_report"] = nh3.clean(html)
         return context
+
+
+class HealthMetricListView(LoginRequiredMixin, ListView):
+    model = HealthMetric
+    allow_empty = False
+
+    def setup(self, request, *args, **kwargs):
+        self.slug = kwargs["data_type"]
+        self.data_type = snake_to_camel(self.slug)
+        return super().setup(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        title = camel_to_title(self.data_type)
+        context["title"] = title
+        context["breadcrumbs"] = [
+            {"name": "Home", "url": reverse("home")},
+            {"name": f"{title} Metrics", "url": ""},
+        ]
+        context["data"] = [model_to_dict(metric) for metric in context["object_list"]]
+        context["form"] = HealthMetricForm(
+            user=self.request.user, initial={"data_type": self.slug}
+        )
+        return context
+
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
+            .filter(user=self.request.user, data_type=self.data_type)
+            .order_by("date")
+        )
 
 
 @method_decorator(csrf_exempt, name="dispatch")

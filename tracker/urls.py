@@ -30,6 +30,11 @@ urlpatterns = [
     path(
         "workouts/<int:pk>/", views.WorkoutDetailView.as_view(), name="workout-detail"
     ),
+    path(
+        "health-metrics/<slug:data_type>/",
+        views.HealthMetricListView.as_view(),
+        name="healthmetric-list",
+    ),
     path("ai-analysis/", views.AIAnalysisView.as_view(), name="ai-analysis"),
     path(
         "apple-health-import/",

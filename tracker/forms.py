@@ -1,6 +1,7 @@
 from django import forms
 
-from .models import CheckIn, MedicationLog, TappingTest, TypingTest
+from .models import CheckIn, HealthMetric, MedicationLog, TappingTest, TypingTest
+from .utils import camel_to_title, camel_to_snake
 
 
 class BaseLogForm(forms.ModelForm):
@@ -64,3 +65,19 @@ class TypingTestForm(BaseLogForm):
     class Meta:
         model = TypingTest
         fields = ["prompt", "typed", "time_seconds", "timestamp"]
+
+
+class HealthMetricForm(forms.Form):
+    data_type = forms.ChoiceField()
+
+    def __init__(self, *args, user, **kwargs):
+        super().__init__(*args, **kwargs)
+        data_types = (
+            HealthMetric.objects.filter(user=user)
+            .distinct("data_type")
+            .order_by("data_type")
+            .values_list("data_type", flat=True)
+        )
+        self.fields["data_type"].choices = [
+            (camel_to_snake(dt), camel_to_title(dt)) for dt in data_types
+        ]
