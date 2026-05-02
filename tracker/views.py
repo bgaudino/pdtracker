@@ -264,7 +264,7 @@ class HealthMetricSummaryView(LoginRequiredMixin, TemplateView):
             for dt in (
                 "stepCount",
                 "exerciseMinutes",
-                "vo2max",
+                "vo2Max",
                 "restingHeartRate",
                 "weight",
                 "dietaryProtein",

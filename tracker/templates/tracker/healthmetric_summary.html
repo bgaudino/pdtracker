@@ -12,10 +12,10 @@
     <br>
     <p>Average (Last 14 Days): {{ metrics.exerciseMinutes.avg|floatformat:0 }}</p>
     <p>Latest: {{ metrics.exerciseMinutes.latest|floatformat:0 }}</p>
-    <a href="{% url 'healthmetric-list' data_type='vo2max' %}">VO2 Max</a>
+    <a href="{% url 'healthmetric-list' data_type='vo2-max' %}">VO2 Max</a>
     <br>
-    <p>Average (Last 14 Days): {{ metrics.vo2max.avg|floatformat:1 }}</p>
-    <p>Latest: {{ metrics.vo2max.latest|floatformat:1 }}</p>
+    <p>Average (Last 14 Days): {{ metrics.vo2Max.avg|floatformat:1 }}</p>
+    <p>Latest: {{ metrics.vo2Max.latest|floatformat:1 }}</p>
     <a href="{% url 'healthmetric-list' data_type='resting-heart-rate' %}">Resting Heart Rate</a>
     <br>
     <p>Average (Last 14 Days): {{ metrics.restingHeartRate.avg|floatformat:0 }}</p>
