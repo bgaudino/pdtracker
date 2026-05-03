@@ -23,8 +23,9 @@
     <main class="container">
       <header>
         <a href="{% url 'home' %}" class="logo">
-          <h1 aria-busy="false" id="loading-indicator">PD Tracker</h1>
+          <h1>PD Tracker</h1>
         </a>
+        <div id="loading-indicator" aria-busy="true"></div>
       </header>
       {% if breadcrumbs %}
         {% include 'partials/_breadcrumbs.html' %}

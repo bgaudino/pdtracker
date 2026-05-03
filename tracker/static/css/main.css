@@ -11,7 +11,7 @@ main > header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
 article > header {
@@ -86,4 +86,9 @@ article > header {
 .toastify {
   background: var(--pico-primary-background) !important;
   box-shadow: var(--pico-box-shadow) !important;
+}
+
+#loading-indicator {
+  margin-right: 0.75rem;
+  font-size: x-large;
 }
