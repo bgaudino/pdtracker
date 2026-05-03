@@ -42,7 +42,7 @@ class TappingTestFilter(django_filters.FilterSet):
         fields=(
             "timestamp",
             "time_since_dose",
-            "taps_per_second",
+            "taps",
         )
     )
 
