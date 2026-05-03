@@ -75,6 +75,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "tracker.context_processors.toasts_processor",
             ],
         },
     },
@@ -133,19 +134,26 @@ LOGOUT_REDIRECT_URL = "login"
 
 SECURE_CSP = {
     "default-src": [CSP.SELF],
-    "connect-src": [CSP.SELF, "https://cdn.jsdelivr.net/npm/chart.umd.min.js.map"],
+    "connect-src": [
+        CSP.SELF,
+        "https://cdn.jsdelivr.net/npm/chart.umd.min.js.map",
+        "https://cdn.jsdelivr.net/sm/e1ebbfe1bf0b0061f0726ebc83434e1c2f8308e6354c415fd05ecccdaad47617.map",
+        "https://cdn.jsdelivr.net/sm/cb4335d1b03e933ed85cb59fffa60cf51f07567ed09831438c60f59afd166464.map",
+    ],
     "img-src": [CSP.SELF, "data:"],  # datepicker icon
     "script-src": [
         CSP.SELF,
         "https://cdn.jsdelivr.net/npm/chart.js",
         "https://cdn.jsdelivr.net/npm/flatpickr",
         "https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js",
+        "https://cdn.jsdelivr.net/npm/toastify-js",
     ],
     "style-src": [
         CSP.SELF,
         "https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css",
         "https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css",
         "'sha256-faU7yAF8NxuMTNEwVmBz+VcYeIoBQ2EMHW3WaVxCvnk='",  # inline styles for htmx
+        "https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css",
     ],
 }
 

@@ -1,10 +1,10 @@
-a[role=button] {
+a[role='button'] {
   height: min-content;
   width: 100%;
 }
 
 article {
- overflow-x: auto;
+  overflow-x: auto;
 }
 
 main > header {
@@ -81,4 +81,9 @@ article > header {
   border-radius: 0.5rem;
   text-align: center;
   margin-bottom: 1rem;
+}
+
+.toastify {
+  background: var(--pico-primary-background) !important;
+  box-shadow: var(--pico-box-shadow) !important;
 }

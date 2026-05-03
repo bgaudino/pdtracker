@@ -2,6 +2,7 @@ import json
 import logging
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
 from django.db.models import Avg, DecimalField
 from django.db.models.functions import Coalesce
 from django.forms import model_to_dict
@@ -88,6 +89,10 @@ class BaseLogCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.user = self.request.user
+        messages.success(
+            self.request,
+            f"{self.form_class._meta.model._meta.verbose_name.title()} saved successfully!",
+        )
         return super().form_valid(form)
 
 
@@ -383,7 +388,17 @@ class AppleHealthFileImportView(LoginRequiredMixin, FormView):
             return self.form_invalid(form)
         try:
             self.workouts = Workout.from_json(user, data)
+            if self.workouts:
+                messages.success(
+                    self.request,
+                    f"Successfully imported {len(self.workouts)} workouts.",
+                )
             self.health_metrics = HealthMetric.from_json(user, data)
+            if self.health_metrics:
+                messages.success(
+                    self.request,
+                    f"Successfully imported {len(self.health_metrics)} health metrics.",
+                )
         except Exception as e:
             logger.error(f"Error importing Apple Health data: {e}")
             form.add_error("file", "Error importing data")
