@@ -1,0 +1,15 @@
+<th>
+  {% if request.GET.order == field_name %}
+    <a href="{% querystring request.GET order=None %}">
+      {{ display_name }}
+      ▲
+    </a>
+  {% elif request.GET.order == '-'|add:field_name %}
+    <a href="{% querystring request.GET order=field_name %}">
+      {{ display_name }}
+      ▼
+    </a>
+  {% else %}
+    <a href="{% querystring request.GET order='-'|add:field_name %}">{{ display_name }}</a>
+  {% endif %}
+</th>

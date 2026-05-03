@@ -12,15 +12,15 @@
     <table class="table">
       <thead>
         <tr>
-          <th>Timestamp</th>
-          <th>Time Since Last Dose</th>
-          <th>Overall Severity</th>
-          <th>Pain</th>
-          <th>Fatigue</th>
-          <th>Rigidity</th>
-          <th>Bradykinesia</th>
-          <th>Tremor</th>
-          <th>Hand Dysfunction</th>
+          {% include 'partials/_orderable.html' with field_name='timestamp' display_name='Timestamp' %}
+          {% include 'partials/_orderable.html' with field_name='time_since_dose' display_name='Time Since Last Dose' %}
+          {% include 'partials/_orderable.html' with field_name='overall_severity' display_name='Overall Severity' %}
+          {% include 'partials/_orderable.html' with field_name='pain' display_name='Pain' %}
+          {% include 'partials/_orderable.html' with field_name='fatigue' display_name='Fatigue' %}
+          {% include 'partials/_orderable.html' with field_name='rigidity' display_name='Rigidity' %}
+          {% include 'partials/_orderable.html' with field_name='bradykinesia' display_name='Bradykinesia' %}
+          {% include 'partials/_orderable.html' with field_name='tremor' display_name='Tremor' %}
+          {% include 'partials/_orderable.html' with field_name='hand_dysfunction' display_name='Hand Dysfunction' %}
         </tr>
       </thead>
       <tbody>

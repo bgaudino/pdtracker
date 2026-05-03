@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "ai_chat.prompts",
+    "django_filters",
     "authtools",
     "accounts",
     "tracker",

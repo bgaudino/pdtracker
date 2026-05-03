@@ -12,9 +12,9 @@
     <table class="table">
       <thead>
         <tr>
-          <th>Timestamp</th>
-          <th>Time Since Last Dose</th>
-          <th>Taps/Second</th>
+          {% include 'partials/_orderable.html' with field_name='timestamp' display_name='Timestamp' %}
+          {% include 'partials/_orderable.html' with field_name='time_since_dose' display_name='Time Since Last Dose' %}
+          {% include 'partials/_orderable.html' with field_name='taps_per_second' display_name='Taps/Second' %}
         </tr>
       </thead>
       <tbody>

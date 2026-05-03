@@ -165,15 +165,22 @@ class CheckIn(AbstractLog):
 class TappingTest(AbstractLog):
     taps = models.PositiveIntegerField()
     duration = models.PositiveIntegerField()
+    taps_per_second = models.GeneratedField(
+        expression=models.F("taps") / models.F("duration"),
+        output_field=models.DecimalField(max_digits=5, decimal_places=2),
+        db_persist=True,
+    )
+
+    class Meta(AbstractLog.Meta):
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(duration__gt=0),
+                name="duration_positive",
+            )
+        ]
 
     def __str__(self):
         return f"Tapping Test {self.taps} taps at {self.timestamp})"
-
-    @property
-    def taps_per_second(self):
-        if self.duration > 0:
-            return self.taps / self.duration
-        return 0
 
 
 correct_expr = models.Func(

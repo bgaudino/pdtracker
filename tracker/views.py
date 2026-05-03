@@ -27,8 +27,8 @@ import markdown
 import nh3
 
 from accounts.models import ApiToken
-
 from .constants import TYPING_PROMPT
+from .filters import CheckInFilter, TappingTestFilter, TypingTestFilter, WorkoutFilter
 from .forms import (
     AppleHealthImportForm,
     CheckInForm,
@@ -131,15 +131,20 @@ class BaseLogListView(LoginRequiredMixin, ListView):
         return context
 
     def get_queryset(self):
-        return (
+        qs = (
             self.model.objects.filter(user=self.request.user)
             .recent()
             .with_time_since_dose()
         )
+        if hasattr(self, "filterset_class"):
+            filterset = self.filterset_class(self.request.GET, queryset=qs)
+            return filterset.qs
+        return qs
 
 
 class CheckInListView(BaseLogListView):
     model = CheckIn
+    filterset_class = CheckInFilter
 
 
 class MedicationLogListView(BaseLogListView):
@@ -151,14 +156,17 @@ class MedicationLogListView(BaseLogListView):
 
 class TappingTestListView(BaseLogListView):
     model = TappingTest
+    filterset_class = TappingTestFilter
 
 
 class TypingTestListView(BaseLogListView):
     model = TypingTest
+    filterset_class = TypingTestFilter
 
 
 class WorkoutListView(BaseLogListView):
     model = Workout
+    filterset_class = WorkoutFilter
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
