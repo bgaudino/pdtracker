@@ -137,22 +137,23 @@ class CheckIn(AbstractLog):
     tremor = SeverityField()
     hand_dysfunction = SeverityField()
     fatigue = SeverityField()
+    overall_severity = models.GeneratedField(
+        expression=average(
+            [
+                models.F("pain"),
+                models.F("rigidity"),
+                models.F("bradykinesia"),
+                models.F("tremor"),
+                models.F("hand_dysfunction"),
+                models.F("fatigue"),
+            ]
+        ),
+        output_field=models.DecimalField(max_digits=4, decimal_places=2),
+        db_persist=True,
+    )
 
     def __str__(self):
         return f"Check-in ({self.timestamp})"
-
-    @property
-    def overall_severity(self):
-        return average(
-            [
-                self.pain,
-                self.rigidity,
-                self.bradykinesia,
-                self.tremor,
-                self.hand_dysfunction,
-                self.fatigue,
-            ]
-        )
 
     @property
     def overall_severity_display(self):
