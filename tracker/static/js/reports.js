@@ -36,6 +36,41 @@ document.addEventListener('DOMContentLoaded', function () {
     },
   });
 
+  const timeOfDayChart = document.getElementById('time-of-day-chart');
+
+  new Chart(timeOfDayChart, {
+    type: 'bar',
+    data: {
+      labels: Object.keys(data.time_of_day),
+      datasets: [
+        {
+          label: 'Severity',
+          data: Object.values(data.time_of_day).map(
+            (item) => item.overall_severity,
+          ),
+        },
+      ],
+    },
+    options: {
+      scales: {
+        x: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Time of Day',
+          },
+        },
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Severity',
+          },
+        },
+      },
+    },
+  });
+
   const tappingChart = document.getElementById('tapping-chart');
 
   new Chart(tappingChart, {

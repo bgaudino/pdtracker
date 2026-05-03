@@ -58,8 +58,24 @@ class LogQuerySet(models.QuerySet):
             groups.setdefault(delta_hours, []).append(obj)
         return groups
 
-    def report(self, fields):
-        groups = self.group_by_hours_since_dose()
+    def group_by_time_of_day(self):
+        queryset = self.exclude(timestamp__isnull=True)
+        groups = {}
+        for obj in queryset:
+            hour = obj.timestamp.hour
+            if hour >= 22 or hour < 6:
+                groups.setdefault("night", []).append(obj)
+            elif 6 <= hour < 12:
+                groups.setdefault("morning", []).append(obj)
+            elif 12 <= hour < 18:
+                groups.setdefault("afternoon", []).append(obj)
+            else:
+                groups.setdefault("evening", []).append(obj)
+        return groups
+
+    def report(self, fields, groups=None):
+        if groups is None:
+            groups = self.group_by_hours_since_dose()
         report_data = {}
         for hours, logs in sorted(groups.items()):
             data = {

@@ -35,6 +35,30 @@
   </article>
   <article>
     <header>
+      <h2>Time of Day Report</h2>
+    </header>
+    <table>
+      <thead>
+        <tr>
+          <th>Time of Day</th>
+          <th>Symptom Severity</th>
+          <th>Check-ins Logged</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for time_of_day, data in reports.time_of_day.items %}
+          <tr>
+            <td>{{ time_of_day }}</td>
+            <td>{{ data.overall_severity|floatformat:2 }}</td>
+            <td>{{ data.count }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <canvas id="time-of-day-chart"></canvas>
+  </article>
+  <article>
+    <header>
       <h2>Tapping Test Report</h2>
     </header>
     <table>
