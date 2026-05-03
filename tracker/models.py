@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from django.conf import settings
 from django.db import models
 from django.db.models.functions import Length
@@ -60,24 +61,32 @@ class LogQuerySet(models.QuerySet):
 
     def group_by_time_of_day(self):
         queryset = self.exclude(timestamp__isnull=True)
-        groups = {}
+        morning, afternoon, evening, night = [], [], [], []
         for obj in queryset:
             hour = timezone.localtime(obj.timestamp).hour
             if hour >= 22 or hour < 6:
-                groups.setdefault("night", []).append(obj)
+                night.append(obj)
             elif 6 <= hour < 12:
-                groups.setdefault("morning", []).append(obj)
+                morning.append(obj)
             elif 12 <= hour < 18:
-                groups.setdefault("afternoon", []).append(obj)
+                afternoon.append(obj)
             else:
-                groups.setdefault("evening", []).append(obj)
-        return groups
+                evening.append(obj)
+        return {
+            "morning": morning,
+            "afternoon": afternoon,
+            "evening": evening,
+            "night": night,
+        }
 
     def report(self, fields, groups=None):
+        sort = False
         if groups is None:
             groups = self.group_by_hours_since_dose()
+            sort = True
         report_data = {}
-        for hours, logs in sorted(groups.items()):
+        items = sorted(groups.items()) if sort else groups.items()
+        for hours, logs in items:
             data = {
                 field: average([getattr(log, field) for log in logs])
                 for field in fields
