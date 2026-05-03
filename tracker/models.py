@@ -62,7 +62,7 @@ class LogQuerySet(models.QuerySet):
         queryset = self.exclude(timestamp__isnull=True)
         groups = {}
         for obj in queryset:
-            hour = obj.timestamp.hour
+            hour = timezone.localtime(obj.timestamp).hour
             if hour >= 22 or hour < 6:
                 groups.setdefault("night", []).append(obj)
             elif 6 <= hour < 12:
