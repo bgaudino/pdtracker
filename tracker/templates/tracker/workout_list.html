@@ -1,11 +1,17 @@
 {% extends 'base.html' %}
-{% load tracker_tags %}
+{% load tracker_tags static %}
+{% block extra_head %}
+  <script src="{% static 'js/workout-list.js' %}"></script>
+{% endblock %}
 {% block content %}
   <article>
     <header>
       <h3>Recent Workouts</h3>
       <a href="{% url 'healthmetric-import' %}" role="button">Import</a>
     </header>
+    <form id="filter-form">
+      {{ filter_form }}
+    </form>
     <table class="table">
       <thead>
         <tr>
@@ -29,7 +35,7 @@
           </tr>
         {% empty %}
           <tr>
-            <td colspan="4">No workouts found.</td>
+            <td colspan="5">No workouts found.</td>
           </tr>
         {% endfor %}
       </tbody>

@@ -137,8 +137,10 @@ class BaseLogListView(LoginRequiredMixin, ListView):
             .with_time_since_dose()
         )
         if hasattr(self, "filterset_class"):
-            filterset = self.filterset_class(self.request.GET, queryset=qs)
-            return filterset.qs
+            self.filterset = self.filterset_class(
+                self.request.GET, queryset=qs, request=self.request
+            )
+            return self.filterset.qs
         return qs
 
 
@@ -170,6 +172,7 @@ class WorkoutListView(BaseLogListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["filter_form"] = self.filterset.form
         context["breadcrumbs"] = self.model.breadcrumbs()
         return context
 

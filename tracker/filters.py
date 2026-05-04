@@ -1,6 +1,8 @@
 from django.db.models import F
 import django_filters
 
+from .utils import camel_to_title
+
 
 class NullsLastOrderingFilter(django_filters.OrderingFilter):
     def filter(self, qs, value):
@@ -59,6 +61,9 @@ class TypingTestFilter(django_filters.FilterSet):
 
 
 class WorkoutFilter(django_filters.FilterSet):
+    activity_type = django_filters.ChoiceFilter(
+        field_name="activity_type", lookup_expr="iexact", empty_label="All"
+    )
     order = NullsLastOrderingFilter(
         fields=(
             "timestamp",
@@ -72,3 +77,17 @@ class WorkoutFilter(django_filters.FilterSet):
             ),
         ),
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.request and self.request.user.is_authenticated:
+            activity_types = (
+                self.request.user.workout_set.order_by("activity_type")
+                .values_list("activity_type", flat=True)
+                .distinct()
+            )
+            self.filters["activity_type"].extra["choices"] = [
+                [activity_type, camel_to_title(activity_type)]
+                for activity_type in activity_types
+            ]
+        self.form.fields["order"].widget.attrs["hidden"] = True
