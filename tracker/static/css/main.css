@@ -92,3 +92,15 @@ article > header {
   margin-right: 0.75rem;
   font-size: x-large;
 }
+
+.pagination {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.current-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--pico-primary-border);
+}

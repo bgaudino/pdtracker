@@ -125,17 +125,15 @@ class TypingTestCreateView(BaseLogCreateView):
 
 
 class BaseLogListView(LoginRequiredMixin, ListView):
+    paginate_by = 20
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["breadcrumbs"] = self.model.breadcrumbs()[:-1]
         return context
 
     def get_queryset(self):
-        qs = (
-            self.model.objects.filter(user=self.request.user)
-            .recent()
-            .with_time_since_dose()
-        )
+        qs = self.model.objects.filter(user=self.request.user).with_time_since_dose()
         if hasattr(self, "filterset_class"):
             self.filterset = self.filterset_class(
                 self.request.GET, queryset=qs, request=self.request
