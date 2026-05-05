@@ -5,29 +5,84 @@
       <h2>Health Metrics Summary</h2>
       <a href="{% url 'healthmetric-import' %}" role="button">Import</a>
     </header>
-    <a href="{% url 'healthmetric-list' data_type='step-count' %}">Step Count</a>
-    <br>
-    <p>Average (Last 14 Days): {{ metrics.stepCount.avg|floatformat:0 }}</p>
-    <p>Latest: {{ metrics.stepCount.latest|floatformat:0 }}</p>
-    <a href="{% url 'healthmetric-list' data_type='exercise-minutes' %}">Exercise Minutes</a>
-    <br>
-    <p>Average (Last 14 Days): {{ metrics.exerciseMinutes.avg|floatformat:0 }}</p>
-    <p>Latest: {{ metrics.exerciseMinutes.latest|floatformat:0 }}</p>
-    <a href="{% url 'healthmetric-list' data_type='vo2-max' %}">VO2 Max</a>
-    <br>
-    <p>Average (Last 14 Days): {{ metrics.vo2Max.avg|floatformat:1 }}</p>
-    <p>Latest: {{ metrics.vo2Max.latest|floatformat:1 }}</p>
-    <a href="{% url 'healthmetric-list' data_type='resting-heart-rate' %}">Resting Heart Rate</a>
-    <br>
-    <p>Average (Last 14 Days): {{ metrics.restingHeartRate.avg|floatformat:0 }}</p>
-    <p>Latest: {{ metrics.restingHeartRate.latest|floatformat:0 }}</p>
-    <a href="{% url 'healthmetric-list' data_type='weight' %}">Weight</a>
-    <br>
-    <p>Average (Last 14 Days): {{ metrics.weight.avg|floatformat:1 }}</p>
-    <p>Latest: {{ metrics.weight.latest|floatformat:1 }}</p>
-    <a href="{% url 'healthmetric-list' data_type='dietary-protein' %}">Dietary Protein</a>
-    <br>
-    <p>Average (Last 14 Days): {{ metrics.dietaryProtein.avg|floatformat:1 }}</p>
-    <p>Latest: {{ metrics.dietaryProtein.latest|floatformat:1 }}</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Metric</th>
+          <th>Latest</th>
+          <th>Average (Last 14 Days)</th>
+          <th>Average (Previous 14 Days)</th>
+          <th>Trend</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <a href="{% url 'healthmetric-list' data_type='step-count' %}">Step Count</a>
+          </td>
+          <td>{{ metrics.stepCount.latest|floatformat:0 }}</td>
+          <td>{{ metrics.stepCount.two_week_avg|floatformat:0 }}</td>
+          <td>{{ metrics.stepCount.prev_two_week_avg|floatformat:0 }}</td>
+          <td {% if metrics.stepCount.is_positive %}class="positive"{% else %}class="negative"{% endif %}>
+            {{ metrics.stepCount.trend|floatformat:1 }}%
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a href="{% url 'healthmetric-list' data_type='exercise-minutes' %}">Exercise Minutes</a>
+          </td>
+          <td>{{ metrics.exerciseMinutes.latest|floatformat:0 }}</td>
+          <td>{{ metrics.exerciseMinutes.two_week_avg|floatformat:0 }}</td>
+          <td>{{ metrics.exerciseMinutes.prev_two_week_avg|floatformat:0 }}</td>
+          <td {% if metrics.exerciseMinutes.is_positive %}class="positive"{% else %}class="negative"{% endif %}>
+            {{ metrics.exerciseMinutes.trend|floatformat:1 }}%
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a href="{% url 'healthmetric-list' data_type='vo2-max' %}">VO2 Max</a>
+          </td>
+          <td>{{ metrics.vo2Max.latest|floatformat:1 }}</td>
+          <td>{{ metrics.vo2Max.two_week_avg|floatformat:1 }}</td>
+          <td>{{ metrics.vo2Max.prev_two_week_avg|floatformat:1 }}</td>
+          <td {% if metrics.vo2Max.is_positive %}class="positive"{% else %}class="negative"{% endif %}>
+            {{ metrics.vo2Max.trend|floatformat:1 }}%
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a href="{% url 'healthmetric-list' data_type='resting-heart-rate' %}">Resting Heart Rate</a>
+          </td>
+          <td>{{ metrics.restingHeartRate.latest|floatformat:0 }}</td>
+          <td>{{ metrics.restingHeartRate.two_week_avg|floatformat:0 }}</td>
+          <td>{{ metrics.restingHeartRate.prev_two_week_avg|floatformat:0 }}</td>
+          <td {% if metrics.restingHeartRate.is_positive %}class="positive"{% else %}class="negative"{% endif %}>
+            {{ metrics.restingHeartRate.trend|floatformat:1 }}%
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a href="{% url 'healthmetric-list' data_type='weight' %}">Weight</a>
+          </td>
+          <td>{{ metrics.weight.latest|floatformat:1 }}</td>
+          <td>{{ metrics.weight.two_week_avg|floatformat:1 }}</td>
+          <td>{{ metrics.weight.prev_two_week_avg|floatformat:1 }}</td>
+          <td {% if metrics.weight.is_positive %}class="positive"{% else %}class="negative"{% endif %}>
+            {{ metrics.weight.trend|floatformat:1 }}%
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a href="{% url 'healthmetric-list' data_type='dietary-protein' %}">Dietary Protein</a>
+          </td>
+          <td>{{ metrics.dietaryProtein.latest|floatformat:1 }}</td>
+          <td>{{ metrics.dietaryProtein.two_week_avg|floatformat:1 }}</td>
+          <td>{{ metrics.dietaryProtein.prev_two_week_avg|floatformat:1 }}</td>
+          <td {% if metrics.dietaryProtein.is_positive %}class="positive"{% else %}class="negative"{% endif %}>
+            {{ metrics.dietaryProtein.trend|floatformat:1 }}%
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </article>
 {% endblock %}

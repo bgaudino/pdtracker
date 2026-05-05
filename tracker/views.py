@@ -212,9 +212,9 @@ class WorkoutDetailView(LoginRequiredMixin, DetailView):
 
 
 def get_logs_for_user(user):
-    check_ins = CheckIn.objects.filter(user=user).recent()
-    tapping_tests = TappingTest.objects.filter(user=user).recent()
-    typing_tests = TypingTest.objects.filter(user=user).recent()
+    check_ins = CheckIn.objects.filter(user=user).two_week_period()
+    tapping_tests = TappingTest.objects.filter(user=user).two_week_period()
+    typing_tests = TypingTest.objects.filter(user=user).two_week_period()
     return check_ins, tapping_tests, typing_tests
 
 
@@ -290,20 +290,33 @@ class AIAnalysisView(LoginRequiredMixin, TemplateView):
 class HealthMetricSummaryView(LoginRequiredMixin, TemplateView):
     template_name = "tracker/healthmetric_summary.html"
 
-    def get_metrics(self, data_type):
+    def get_metrics(self, data_type, is_positive=True):
         user = self.request.user
         qs = user.healthmetric_set.filter(data_type=data_type)
         today = timezone.now().date()
         two_weeks_ago = today - timezone.timedelta(days=14)
         two_week_qs = qs.filter(date__gte=two_weeks_ago, date__lt=today)
+        four_weeks_ago = today - timezone.timedelta(days=28)
+        prev_two_week_qs = qs.filter(date__gte=four_weeks_ago, date__lt=two_weeks_ago)
         latest = qs.order_by("-date").first()
         latest_value = latest.value if latest else None
-        avg = two_week_qs.aggregate(
+        two_week_avg = two_week_qs.aggregate(
             avg_value=Coalesce(Avg("value"), 0, output_field=DecimalField())
         )["avg_value"]
+        prev_two_week_avg = prev_two_week_qs.aggregate(
+            avg_value=Coalesce(Avg("value"), 0, output_field=DecimalField())
+        )["avg_value"]
+        trend = (
+            (two_week_avg - prev_two_week_avg) / prev_two_week_avg * 100
+            if prev_two_week_avg
+            else None
+        )
         return {
             "latest": latest_value,
-            "avg": avg,
+            "two_week_avg": two_week_avg,
+            "prev_two_week_avg": prev_two_week_avg,
+            "trend": trend,
+            "is_positive": trend is not None and ((trend > 0) == is_positive),
         }
 
     def get_context_data(self, **kwargs):
@@ -313,14 +326,14 @@ class HealthMetricSummaryView(LoginRequiredMixin, TemplateView):
             {"name": "Health Metrics", "url": ""},
         ]
         context["metrics"] = {
-            dt: self.get_metrics(dt)
-            for dt in (
-                "stepCount",
-                "exerciseMinutes",
-                "vo2Max",
-                "restingHeartRate",
-                "weight",
-                "dietaryProtein",
+            dt: self.get_metrics(dt, is_positive)
+            for dt, is_positive in (
+                ("stepCount", True),
+                ("exerciseMinutes", True),
+                ("vo2Max", True),
+                ("restingHeartRate", False),
+                ("weight", False),
+                ("dietaryProtein", True),
             )
         }
         return context

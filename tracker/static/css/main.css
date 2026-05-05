@@ -104,3 +104,15 @@ article > header {
   justify-content: center;
   border: 1px solid var(--pico-primary-border);
 }
+
+td.positive::before {
+  content: "▲";
+  color: green;
+  margin-right: 0.25rem;
+}
+
+td.negative::before {
+  content: "▼";
+  color: red;
+  margin-right: 0.25rem;
+}
