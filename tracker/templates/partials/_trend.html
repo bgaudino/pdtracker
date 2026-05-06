@@ -1,0 +1,7 @@
+{% if trend %}
+  <span {% if is_positive %} {% if trend > 0 %} class="trend positive rising" {% elif trend < 0 %} class="trend negative falling" {% endif %}
+        {% else %}
+        {% if trend < 0 %} class="trend positive falling" {% elif trend > 0 %} class="trend negative rising" {% endif %}
+        {% endif %}
+        class="{% if is_positive %}positive{% else %}negative{% endif %}">({{ trend|floatformat:2 }}%)</span>
+{% endif %}

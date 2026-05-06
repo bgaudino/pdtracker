@@ -23,8 +23,8 @@
           <td>{{ metrics.stepCount.latest|floatformat:0 }}</td>
           <td>{{ metrics.stepCount.two_week_avg|floatformat:0 }}</td>
           <td>{{ metrics.stepCount.prev_two_week_avg|floatformat:0 }}</td>
-          <td {% if metrics.stepCount.is_positive %}class="positive"{% else %}class="negative"{% endif %}>
-            {{ metrics.stepCount.trend|floatformat:1 }}%
+          <td>
+            {% include "partials/_trend.html" with trend=metrics.stepCount.trend is_positive=metrics.stepCount.is_positive %}
           </td>
         </tr>
         <tr>
@@ -34,8 +34,8 @@
           <td>{{ metrics.exerciseMinutes.latest|floatformat:0 }}</td>
           <td>{{ metrics.exerciseMinutes.two_week_avg|floatformat:0 }}</td>
           <td>{{ metrics.exerciseMinutes.prev_two_week_avg|floatformat:0 }}</td>
-          <td {% if metrics.exerciseMinutes.is_positive %}class="positive"{% else %}class="negative"{% endif %}>
-            {{ metrics.exerciseMinutes.trend|floatformat:1 }}%
+          <td>
+            {% include "partials/_trend.html" with trend=metrics.exerciseMinutes.trend is_positive=metrics.exerciseMinutes.is_positive %}
           </td>
         </tr>
         <tr>
@@ -45,9 +45,7 @@
           <td>{{ metrics.vo2Max.latest|floatformat:1 }}</td>
           <td>{{ metrics.vo2Max.two_week_avg|floatformat:1 }}</td>
           <td>{{ metrics.vo2Max.prev_two_week_avg|floatformat:1 }}</td>
-          <td {% if metrics.vo2Max.is_positive %}class="positive"{% else %}class="negative"{% endif %}>
-            {{ metrics.vo2Max.trend|floatformat:1 }}%
-          </td>
+          <td>{% include "partials/_trend.html" with trend=metrics.vo2Max.trend is_positive=metrics.vo2Max.is_positive %}</td>
         </tr>
         <tr>
           <td>
@@ -56,8 +54,8 @@
           <td>{{ metrics.restingHeartRate.latest|floatformat:0 }}</td>
           <td>{{ metrics.restingHeartRate.two_week_avg|floatformat:0 }}</td>
           <td>{{ metrics.restingHeartRate.prev_two_week_avg|floatformat:0 }}</td>
-          <td {% if metrics.restingHeartRate.is_positive %}class="positive"{% else %}class="negative"{% endif %}>
-            {{ metrics.restingHeartRate.trend|floatformat:1 }}%
+          <td>
+            {% include "partials/_trend.html" with trend=metrics.restingHeartRate.trend is_positive=metrics.restingHeartRate.is_positive %}
           </td>
         </tr>
         <tr>
@@ -67,9 +65,7 @@
           <td>{{ metrics.weight.latest|floatformat:1 }}</td>
           <td>{{ metrics.weight.two_week_avg|floatformat:1 }}</td>
           <td>{{ metrics.weight.prev_two_week_avg|floatformat:1 }}</td>
-          <td {% if metrics.weight.is_positive %}class="positive"{% else %}class="negative"{% endif %}>
-            {{ metrics.weight.trend|floatformat:1 }}%
-          </td>
+          <td>{% include "partials/_trend.html" with trend=metrics.weight.trend is_positive=metrics.weight.is_positive %}</td>
         </tr>
         <tr>
           <td>
@@ -78,8 +74,8 @@
           <td>{{ metrics.dietaryProtein.latest|floatformat:1 }}</td>
           <td>{{ metrics.dietaryProtein.two_week_avg|floatformat:1 }}</td>
           <td>{{ metrics.dietaryProtein.prev_two_week_avg|floatformat:1 }}</td>
-          <td {% if metrics.dietaryProtein.is_positive %}class="positive"{% else %}class="negative"{% endif %}>
-            {{ metrics.dietaryProtein.trend|floatformat:1 }}%
+          <td>
+            {% include "partials/_trend.html" with trend=metrics.dietaryProtein.trend is_positive=metrics.dietaryProtein.is_positive %}
           </td>
         </tr>
       </tbody>

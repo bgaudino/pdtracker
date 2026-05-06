@@ -8,11 +8,38 @@ document.addEventListener('DOMContentLoaded', function () {
       labels: Object.keys(data.checkin),
       datasets: [
         {
-          label: 'Severity',
+          label: 'Overall Severity',
           data: Object.values(data.checkin).map(
             (item) => item.overall_severity,
           ),
-          borderWidth: 1,
+          type: 'line',
+        },
+        {
+          label: 'Rigidity',
+          data: Object.values(data.checkin).map((item) => item.rigidity),
+          type: 'bar',
+        },
+        {
+          label: 'Bradykinesia',
+          data: Object.values(data.checkin).map((item) => item.bradykinesia),
+          type: 'bar',
+        },
+        {
+          label: 'Hand Dysfunction',
+          data: Object.values(data.checkin).map(
+            (item) => item.hand_dysfunction,
+          ),
+          type: 'bar',
+        },
+        {
+          label: 'Pain',
+          data: Object.values(data.checkin).map((item) => item.pain),
+          type: 'bar',
+        },
+        {
+          label: 'Fatigue',
+          data: Object.values(data.checkin).map((item) => item.fatigue),
+          type: 'bar',
         },
       ],
     },
@@ -44,10 +71,38 @@ document.addEventListener('DOMContentLoaded', function () {
       labels: Object.keys(data.time_of_day),
       datasets: [
         {
-          label: 'Severity',
-          data: Object.values(data.time_of_day).map(
+          label: 'Overall Severity',
+          data: Object.values(data.checkin).map(
             (item) => item.overall_severity,
           ),
+          type: 'line',
+        },
+        {
+          label: 'Rigidity',
+          data: Object.values(data.checkin).map((item) => item.rigidity),
+          type: 'bar',
+        },
+        {
+          label: 'Bradykinesia',
+          data: Object.values(data.checkin).map((item) => item.bradykinesia),
+          type: 'bar',
+        },
+        {
+          label: 'Hand Dysfunction',
+          data: Object.values(data.checkin).map(
+            (item) => item.hand_dysfunction,
+          ),
+          type: 'bar',
+        },
+        {
+          label: 'Pain',
+          data: Object.values(data.checkin).map((item) => item.pain),
+          type: 'bar',
+        },
+        {
+          label: 'Fatigue',
+          data: Object.values(data.checkin).map((item) => item.fatigue),
+          type: 'bar',
         },
       ],
     },

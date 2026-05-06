@@ -45,7 +45,6 @@ class CheckInForm(BaseLogForm):
             "pain",
             "rigidity",
             "bradykinesia",
-            "tremor",
             "hand_dysfunction",
             "notes",
             "timestamp",

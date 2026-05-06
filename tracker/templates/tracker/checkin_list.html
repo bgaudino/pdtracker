@@ -19,7 +19,6 @@
           {% include 'partials/_orderable.html' with field_name='fatigue' display_name='Fatigue' %}
           {% include 'partials/_orderable.html' with field_name='rigidity' display_name='Rigidity' %}
           {% include 'partials/_orderable.html' with field_name='bradykinesia' display_name='Bradykinesia' %}
-          {% include 'partials/_orderable.html' with field_name='tremor' display_name='Tremor' %}
           {% include 'partials/_orderable.html' with field_name='hand_dysfunction' display_name='Hand Dysfunction' %}
         </tr>
       </thead>
@@ -33,12 +32,11 @@
             <td>{{ checkin.get_fatigue_display }}</td>
             <td>{{ checkin.get_rigidity_display }}</td>
             <td>{{ checkin.get_bradykinesia_display }}</td>
-            <td>{{ checkin.get_tremor_display }}</td>
             <td>{{ checkin.get_hand_dysfunction_display }}</td>
           </tr>
         {% empty %}
           <tr>
-            <td colspan="9">No check-ins found.</td>
+            <td colspan="8">No check-ins found.</td>
           </tr>
         {% endfor %}
       </tbody>

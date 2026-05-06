@@ -212,15 +212,27 @@ class WorkoutDetailView(LoginRequiredMixin, DetailView):
 
 
 def get_logs_for_user(user):
-    check_ins = CheckIn.objects.filter(user=user).two_week_period()
-    tapping_tests = TappingTest.objects.filter(user=user).two_week_period()
-    typing_tests = TypingTest.objects.filter(user=user).two_week_period()
+    check_ins = CheckIn.objects.filter(user=user)
+    tapping_tests = TappingTest.objects.filter(user=user)
+    typing_tests = TypingTest.objects.filter(user=user)
     return check_ins, tapping_tests, typing_tests
+
+
+CHECK_IN_FIELDS = [
+    "overall_severity",
+    "rigidity",
+    "bradykinesia",
+    "hand_dysfunction",
+    "pain",
+    "fatigue",
+]
 
 
 def generate_reports(check_ins, tapping_tests, typing_tests):
     reports = {
-        "checkin": check_ins.report(fields=["overall_severity"]),
+        "checkin": check_ins.report(
+            fields=CHECK_IN_FIELDS,
+        ),
         "tappingtest": tapping_tests.report(fields=["taps_per_second"]),
         "typingtest": typing_tests.report(fields=["wpm", "accuracy"]),
     }
@@ -230,13 +242,37 @@ def generate_reports(check_ins, tapping_tests, typing_tests):
 class ReportsView(LoginRequiredMixin, TemplateView):
     template_name = "tracker/reports.html"
 
+    def get_trends(self, qs):
+        current_period = qs.two_week_period()
+        previous_period = qs.two_week_period(
+            timezone.localtime() - timezone.timedelta(days=14)
+        )
+        period_comparison = qs.report(
+            fields=CHECK_IN_FIELDS,
+            groups={"current": current_period, "previous": previous_period},
+        )
+        trends = {}
+        for field in CHECK_IN_FIELDS:
+            current_avg = period_comparison["current"][field]
+            previous_avg = period_comparison["previous"][field]
+            if (
+                current_avg is not None
+                and previous_avg is not None
+                and previous_avg != 0
+            ):
+                trend = (current_avg - previous_avg) / previous_avg * 100
+                trends[field] = trend
+        return trends
+
     def get_context_data(self, **kwargs):
         check_ins, tapping_tests, typing_tests = get_logs_for_user(self.request.user)
         context = super().get_context_data(**kwargs)
         context["reports"] = generate_reports(check_ins, tapping_tests, typing_tests)
         context["reports"]["time_of_day"] = check_ins.report(
-            fields=["overall_severity"], groups=check_ins.group_by_time_of_day()
+            fields=CHECK_IN_FIELDS,
+            groups=check_ins.group_by_time_of_day(),
         )
+        context["trends"] = self.get_trends(check_ins)
         context["breadcrumbs"] = [
             {"name": "Home", "url": reverse("home")},
             {"name": "Reports", "url": reverse("reports")},
@@ -316,7 +352,7 @@ class HealthMetricSummaryView(LoginRequiredMixin, TemplateView):
             "two_week_avg": two_week_avg,
             "prev_two_week_avg": prev_two_week_avg,
             "trend": trend,
-            "is_positive": trend is not None and ((trend > 0) == is_positive),
+            "is_positive": is_positive,
         }
 
     def get_context_data(self, **kwargs):

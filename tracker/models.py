@@ -141,7 +141,6 @@ class CheckIn(AbstractLog):
                 models.F("pain"),
                 models.F("rigidity"),
                 models.F("bradykinesia"),
-                models.F("tremor"),
                 models.F("hand_dysfunction"),
                 models.F("fatigue"),
             ]

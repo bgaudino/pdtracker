@@ -105,14 +105,20 @@ article > header {
   border: 1px solid var(--pico-primary-border);
 }
 
-td.positive::before {
-  content: "▲";
+.trend.positive {
   color: green;
+}
+
+.trend.negative {
+  color: red;
+}
+
+.trend.rising::before {
+  content: "▲";
   margin-right: 0.25rem;
 }
 
-td.negative::before {
+.trend.falling::before {
   content: "▼";
-  color: red;
   margin-right: 0.25rem;
 }
