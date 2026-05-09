@@ -368,6 +368,7 @@ class HealthMetricSummaryView(LoginRequiredMixin, TemplateView):
                 ("exerciseMinutes", True),
                 ("vo2Max", True),
                 ("restingHeartRate", False),
+                ("heartRateVariability", True),
                 ("weight", False),
                 ("dietaryProtein", True),
             )

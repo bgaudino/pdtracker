@@ -58,7 +58,7 @@ class MedicationLogForm(BaseLogForm):
 
     def __init__(self, *args, user, **kwargs):
         super().__init__(*args, user=user, **kwargs)
-        self.fields["medication"].queryset = user.medication_set.all()
+        self.fields["medication"].queryset = user.medication_set.filter(is_active=True)
         self.fields["medication"].empty_label = None
 
 

@@ -13,6 +13,7 @@ class Medication(models.Model):
     name = models.CharField()
     dose = models.CharField()
     notes = models.TextField(blank=True)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.name} ({self.dose})"
