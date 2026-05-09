@@ -60,6 +60,17 @@
         </tr>
         <tr>
           <td>
+            <a href="{% url 'healthmetric-list' data_type='heart-rate-variability' %}">Heart Rate Variability</a>
+          </td>
+          <td>{{ metrics.heartRateVariability.latest|floatformat:1 }}</td>
+          <td>{{ metrics.heartRateVariability.two_week_avg|floatformat:1 }}</td>
+          <td>{{ metrics.heartRateVariability.prev_two_week_avg|floatformat:1 }}</td>
+          <td>
+            {% include "partials/_trend.html" with trend=metrics.heartRateVariability.trend is_positive=metrics.heartRateVariability.is_positive %}
+          </td>
+        </tr>
+        <tr>
+          <td>
             <a href="{% url 'healthmetric-list' data_type='weight' %}">Weight</a>
           </td>
           <td>{{ metrics.weight.latest|floatformat:1 }}</td>
