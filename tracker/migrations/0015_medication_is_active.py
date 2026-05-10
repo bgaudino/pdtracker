@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tracker', '0014_checkin_overall_severity'),
+        ("tracker", "0014_checkin_overall_severity"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='medication',
-            name='is_active',
+            model_name="medication",
+            name="is_active",
             field=models.BooleanField(default=True),
         ),
     ]
